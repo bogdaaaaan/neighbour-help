@@ -9,7 +9,7 @@ interface HelpRequestCardProps {
 
 const HelpRequestCard = ({ request, categoryLabel }: HelpRequestCardProps) => {
 	return (
-		<div className='flex flex-col justify-between bg-white rounded-lg border border-slate-200 p-6 hover:border-teal-600 hover:shadow-md transition-all min-h-[250px]'>
+		<div className='flex flex-col justify-between bg-white rounded-lg border border-slate-200 p-6 hover:border-teal-600 hover:shadow-md transition-all min-h-62.5'>
 			<div className='flex items-start justify-between gap-3 mb-3'>
 				<h3 className='text-slate-900 flex-1 line-clamp-2 min-h-[3em]'>{request.title}</h3>
 				<span className='px-3 py-1 bg-teal-50 text-teal-700 rounded-md text-sm whitespace-nowrap'>
