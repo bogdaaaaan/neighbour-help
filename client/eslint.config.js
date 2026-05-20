@@ -21,7 +21,7 @@ export default tseslint.config(
 		},
 		rules: {
 			...reactHooks.configs.recommended.rules,
-			'no-unused-vars': ['error', { argsIgnorePattern: '^_$' }],
+			'no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
 			quotes: ['error', 'single'],
 			'jsx-quotes': ['error', 'prefer-single'],
 			semi: ['error', 'always'],
