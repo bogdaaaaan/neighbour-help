@@ -1,13 +1,13 @@
-import { Link } from 'react-router';
 import { ArrowRightIcon } from 'lucide-react';
 import type { HelpRequest } from '@/types/common';
 
 interface HelpRequestCardProps {
 	request: HelpRequest;
 	categoryLabel: string;
+	onViewDetails: () => void;
 }
 
-const HelpRequestCard = ({ request, categoryLabel }: HelpRequestCardProps) => {
+const HelpRequestCard = ({ request, categoryLabel, onViewDetails }: HelpRequestCardProps) => {
 	return (
 		<div className='flex flex-col justify-between bg-white rounded-lg border border-slate-200 p-6 hover:border-teal-600 hover:shadow-md transition-all min-h-62.5'>
 			<div className='flex items-start justify-between gap-3 mb-3'>
@@ -27,10 +27,10 @@ const HelpRequestCard = ({ request, categoryLabel }: HelpRequestCardProps) => {
 					<p className='text-slate-400'>{request.date}</p>
 				</div>
 
-				<Link to={`/request/${request.id}`} className='flex items-center gap-1 text-teal-600 hover:text-teal-700 transition-colors'>
+				<button onClick={onViewDetails} className='flex items-center gap-1 text-teal-600 hover:text-teal-700 transition-colors cursor-pointer'>
 					<span className='text-sm'>View Details</span>
 					<ArrowRightIcon className='w-4 h-4' />
-				</Link>
+				</button>
 			</div>
 		</div>
 	);
