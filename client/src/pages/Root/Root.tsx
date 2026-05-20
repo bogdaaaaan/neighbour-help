@@ -1,14 +1,21 @@
 import { Outlet } from 'react-router';
 
-import Navbar from '../../components/Layouts/Navbar';
+import Navbar from '@/components/Layouts/Navbar/Navbar';
 
 const Root = () => {
 	return (
 		<>
-			<Navbar/>
-			<div className='container py-2.5 px-4 mx-auto'>
+			<header className='sticky top-0 z-50'>
+				<Navbar/>
+			</header>
+
+			<main>
 				<Outlet />
-			</div>
+			</main>
+
+			<footer>
+
+			</footer>
 		</>
 
 	);
