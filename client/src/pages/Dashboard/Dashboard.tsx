@@ -3,17 +3,19 @@ import type { HelpRequest } from '@/types/common';
 
 import CategoryFilter from '@/components/Layouts/CategoryFilter';
 import HelpRequestCard from '@/components/Cards/HelpRequestCard';
-import { RequestModal } from '@/components/Modals/RequestModal';
+import RequestInfoModal from '@/components/Modals/RequestInfoModal';
 
-import { categories, helpRequests } from '@/utils/help_requests';
+import { categories } from '@/utils/common';
+import { useRequests } from '@/context/RequestsProvider';
 
 const Dashboard = () => {
-	  const [activeCategory, setActiveCategory] = useState<string | null>(null);
-	  const [selectedRequest, setSelectedRequest] = useState<HelpRequest | null>(null);
+	const { requests } = useRequests();
+	const [activeCategory, setActiveCategory] = useState<string | null>(null);
+	const [selectedRequest, setSelectedRequest] = useState<HelpRequest | null>(null);
 
 	const filteredRequests = activeCategory
-		? helpRequests.filter(request => request.category === activeCategory)
-		: helpRequests;
+		? requests.filter(request => request.category === activeCategory)
+		: requests;
 
 	return (
 		<section className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8'>
@@ -35,7 +37,7 @@ const Dashboard = () => {
 			</div>
 
 			{selectedRequest && (
-				<RequestModal
+				<RequestInfoModal
 					request={selectedRequest}
 					categoryLabel={categories.find(c => c.id === selectedRequest.category)?.label || 'Other'}
 					isOpen={!!selectedRequest}

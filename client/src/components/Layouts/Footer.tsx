@@ -13,9 +13,6 @@ const Footer = () => {
 						<Link to='/dashboard' className='text-slate-600 hover:text-slate-900 transition-colors'>
               				Browse
 						</Link>
-						<Link to='/create' className='text-slate-600 hover:text-slate-900 transition-colors'>
-              				Create Request
-						</Link>
 						<Link to='/profile' className='text-slate-600 hover:text-slate-900 transition-colors'>
               				Profile
 						</Link>

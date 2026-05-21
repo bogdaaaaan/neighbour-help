@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router';
-import { ClockIcon, CheckCircleIcon, PlusIcon } from 'lucide-react';
+import { useNavigate } from 'react-router';
+import { ClockIcon, CheckCircleIcon } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 
 import { completedRequests, myRequests } from '@/utils/user_data';
@@ -88,15 +88,6 @@ const Profile = () => {
 							</div>
 						</div>
 					</div>
-
-					{/* Post request shortcut */}
-					<Link
-						to='/create'
-						className='shrink-0 flex items-center gap-2 px-4 py-2 bg-teal-600 text-white text-sm font-medium rounded-lg hover:bg-teal-700 transition-colors self-start'
-					>
-						<PlusIcon className='w-4 h-4' />
-						New Request
-					</Link>
 				</div>
 			</div>
 

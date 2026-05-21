@@ -1,7 +1,22 @@
-import { Link } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 import { HeartHandshakeIcon, UsersIcon, MapPinIcon, ShieldCheckIcon } from 'lucide-react';
 
+import { useAuth } from '@/context/AuthContext';
+import { useRequests } from '@/context/RequestsProvider';
+
 const Home = () => {
+	  const navigate = useNavigate();
+	const { isAuthenticated } = useAuth();
+	const { openCreateModal } = useRequests();
+
+	const handlePostRequest = () => {
+		if (!isAuthenticated) {
+			navigate('/register');
+		} else {
+			openCreateModal();
+		}
+	};
+
 	return (
 		<section className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
 			{/* Hero Section */}
@@ -20,12 +35,12 @@ const Home = () => {
 					>
 						Browse Help Requests
 					</Link>
-					<Link
-						to='/create'
+					<button
+						onClick={handlePostRequest}
 						className='px-6 py-3 bg-white text-slate-900 border border-slate-200 rounded-lg hover:border-teal-600 transition-colors'
 					>
 						Post a Request
-					</Link>
+					</button>
 				</div>
 			</section>
 

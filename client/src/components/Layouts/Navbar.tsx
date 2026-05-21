@@ -3,11 +3,13 @@ import { Link, useNavigate } from 'react-router-dom';
 import { ChevronDownIcon, LogOutIcon, UserCircleIcon } from 'lucide-react';
 
 import { useAuth } from '@/context/AuthContext';
-
+import { useRequests } from '@/context/RequestsProvider';
 
 const Navbar = () => {
 	const navigate = useNavigate();
 	const { user, isAuthenticated, logout } = useAuth();
+	const { openCreateModal } = useRequests();
+
 	const [menuOpen, setMenuOpen] = useState(false);
 	const menuRef = useRef<HTMLDivElement>(null);
 
@@ -25,7 +27,7 @@ const Navbar = () => {
 		if (!isAuthenticated) {
 			navigate('/register');
 		} else {
-			navigate('/create');
+			openCreateModal();
 		}
 	};
 

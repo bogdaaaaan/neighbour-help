@@ -1,5 +1,4 @@
 import { createContext, useContext, useState } from 'react';
-import type { ReactNode } from 'react';
 import type { User } from '@/types/auth';
 
 interface AuthContextType {
@@ -11,7 +10,7 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
-export function AuthProvider({ children }: { children: ReactNode }) {
+const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 	const [user, setUser] = useState<User | null>(() => {
 		const stored = localStorage.getItem('nh_user');
 		return stored ? JSON.parse(stored) : null;
@@ -33,10 +32,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 			{children}
 		</AuthContext.Provider>
 	);
-}
+};
 
 export function useAuth() {
 	const ctx = useContext(AuthContext);
 	if (!ctx) {throw new Error('useAuth must be used within AuthProvider');}
 	return ctx;
 }
+
+export default AuthProvider;

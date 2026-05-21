@@ -8,7 +8,7 @@ interface RequestModalProps {
   onClose: () => void;
 }
 
-export function RequestModal({ request, categoryLabel, isOpen, onClose }: RequestModalProps) {
+const RequestInfoModal = ({ request, categoryLabel, isOpen, onClose }: RequestModalProps) => {
 	if (!isOpen) {return null;}
 
 	return (
@@ -87,4 +87,6 @@ export function RequestModal({ request, categoryLabel, isOpen, onClose }: Reques
 			</div>
 		</div>
 	);
-}
+};
+
+export default RequestInfoModal;
