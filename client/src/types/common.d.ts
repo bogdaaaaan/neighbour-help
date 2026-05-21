@@ -13,4 +13,5 @@ export interface HelpRequest {
 	description: string;
 	author: string;
 	date: string;
+	status: string;
 }

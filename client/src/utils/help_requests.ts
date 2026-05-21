@@ -1,3 +1,4 @@
+import type { HelpRequest } from '@/types/common';
 import { PackageIcon, ShoppingCartIcon, WrenchIcon, MonitorIcon, PawPrintIcon, HelpCircleIcon } from 'lucide-react';
 
 export const categories = [
@@ -9,7 +10,7 @@ export const categories = [
 	{ id: 'other', label: 'Other', icon: HelpCircleIcon },
 ];
 
-export const helpRequests = [
+export const helpRequests: HelpRequest[] = [
 	{
 		id: 1,
 		title: ' Carrying groceries to 3rd floorCarrying groceries to 3rd floorCarrying groceries to 3rd floor',
@@ -18,6 +19,7 @@ export const helpRequests = [
 			'Need help carrying heavy grocery bags from the parking lot to my apartment on the 3rd floor. No elevator available.',
 		author: 'Sarah Martinez',
 		date: '2 hours ago',
+		status: 'open'
 	},
 	{
 		id: 2,
@@ -27,6 +29,7 @@ export const helpRequests = [
 			'Just moved in and struggling to configure my new router. Would appreciate some tech-savvy help!',
 		author: 'Michael Chen',
 		date: '3 hours ago',
+		status: 'open'
 	},
 	{
 		id: 3,
@@ -36,6 +39,7 @@ export const helpRequests = [
 			'Elderly resident looking for help with weekly grocery shopping trip. Can provide list in advance.',
 		author: 'Dorothy Williams',
 		date: '5 hours ago',
+		status: 'open'
 	},
 	{
 		id: 4,
@@ -45,6 +49,7 @@ export const helpRequests = [
 			'Small leak in kitchen faucet that needs tightening or washer replacement. Happy to provide tools.',
 		author: 'James Rodriguez',
 		date: '1 day ago',
+		status: 'open'
 	},
 	{
 		id: 5,
@@ -54,6 +59,7 @@ export const helpRequests = [
 			'Looking for someone to walk my golden retriever once a day while I\'m at work. Very friendly dog!',
 		author: 'Emma Thompson',
 		date: '1 day ago',
+		status: 'open'
 	},
 	{
 		id: 6,
@@ -63,6 +69,7 @@ export const helpRequests = [
 			'Just purchased an IKEA bookshelf and could use an extra pair of hands for assembly.',
 		author: 'Alex Kumar',
 		date: '2 days ago',
+		status: 'open'
 	},
 
 	{
@@ -73,6 +80,7 @@ export const helpRequests = [
 			'Need help transporting a sofa to a new apartment nearby. Small van would be ideal.',
 		author: 'Daniel Weber',
 		date: '3 hours ago',
+		status: 'open'
 	},
 	{
 		id: 8,
@@ -82,6 +90,7 @@ export const helpRequests = [
 			'Desktop PC suddenly stopped booting. Looking for someone to help diagnose the issue.',
 		author: 'Anna Fischer',
 		date: '6 hours ago',
+		status: 'open'
 	},
 	{
 		id: 9,
@@ -91,6 +100,7 @@ export const helpRequests = [
 			'Unable to leave home today, need someone to pick up medication from local pharmacy.',
 		author: 'Peter Schmidt',
 		date: '8 hours ago',
+		status: 'open'
 	},
 	{
 		id: 10,
@@ -100,6 +110,7 @@ export const helpRequests = [
 			'Ceiling light bulb in bathroom needs replacement. Step ladder required.',
 		author: 'Laura Becker',
 		date: '10 hours ago',
+		status: 'open'
 	},
 	{
 		id: 11,
@@ -109,6 +120,7 @@ export const helpRequests = [
 			'Need help walking a small dachshund in the evenings for 20–30 minutes.',
 		author: 'Julia Meyer',
 		date: '12 hours ago',
+		status: 'open'
 	},
 	{
 		id: 12,
@@ -118,6 +130,7 @@ export const helpRequests = [
 			'New bed frame from IKEA needs assembly. Instructions included but prefer experienced help.',
 		author: 'Markus Vogel',
 		date: '1 day ago',
+		status: 'open'
 	},
 	{
 		id: 13,
@@ -127,6 +140,7 @@ export const helpRequests = [
 			'Large laundry load needs to be carried to laundromat and back.',
 		author: 'Sophie Klein',
 		date: '2 days ago',
+		status: 'open'
 	},
 	{
 		id: 14,
@@ -136,6 +150,7 @@ export const helpRequests = [
 			'Wireless printer setup not working on Windows laptop.',
 		author: 'Thomas Braun',
 		date: '2 days ago',
+		status: 'open'
 	},
 	{
 		id: 15,
@@ -145,6 +160,7 @@ export const helpRequests = [
 			'Weekly grocery run needed for elderly neighbor with mobility issues.',
 		author: 'Nina Hoffmann',
 		date: '3 days ago',
+		status: 'open'
 	},
 	{
 		id: 16,
@@ -154,6 +170,7 @@ export const helpRequests = [
 			'Shower head keeps dripping even when turned off. Likely seal issue.',
 		author: 'Kevin Schneider',
 		date: '3 days ago',
+		status: 'open'
 	},
 	{
 		id: 17,
@@ -163,6 +180,7 @@ export const helpRequests = [
 			'Need someone to feed and check on cat once daily for a week.',
 		author: 'Lisa Hartmann',
 		date: '4 days ago',
+		status: 'open'
 	},
 	{
 		id: 18,
@@ -172,6 +190,7 @@ export const helpRequests = [
 			'Need help mounting a flat-screen TV securely on the wall.',
 		author: 'Oliver Krüger',
 		date: '4 days ago',
+		status: 'open'
 	},
 	{
 		id: 19,
@@ -181,6 +200,7 @@ export const helpRequests = [
 			'Old furniture needs to be carried down from 2nd floor for disposal.',
 		author: 'Hannah Neumann',
 		date: '5 days ago',
+		status: 'open'
 	},
 	{
 		id: 20,
@@ -190,5 +210,6 @@ export const helpRequests = [
 			'Need help configuring smart lights and voice assistant.',
 		author: 'Felix Wagner',
 		date: '5 days ago',
+		status: 'open'
 	},
 ];
