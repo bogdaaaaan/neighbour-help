@@ -1,0 +1,219 @@
+import { useState, useRef, } from 'react';
+import { Link, useNavigate } from 'react-router';
+import { UserCircleIcon, UploadIcon } from 'lucide-react';
+import { useAuth } from '@/context/AuthContext';
+import type { FieldErrors } from '@/types/auth';
+import FormInput from '@/components/Inputs/FormInput';
+
+const EMAIL_RE = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+const NAME_RE = /^[a-zA-ZÀ-ÿ\s'-]{2,50}$/;
+const PASSWORD_RE = /^(?=.*[A-Za-z])(?=.*\d).{8,}$/;
+
+const Register = () => {
+	const navigate = useNavigate();
+	const { login } = useAuth();
+	const fileInputRef = useRef<HTMLInputElement>(null);
+
+	const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+	const [avatarBase64, setAvatarBase64] = useState<string | undefined>(undefined);
+	const [fullName, setFullName] = useState('');
+	const [email, setEmail] = useState('');
+	const [password, setPassword] = useState('');
+	const [repeatPassword, setRepeatPassword] = useState('');
+
+	const [errors, setErrors] = useState<FieldErrors>({});
+	const [submitted, setSubmitted] = useState(false);
+
+	const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		const file = e.target.files?.[0];
+		if (!file) {return;}
+		if (!file.type.startsWith('image/')) {
+			setErrors((prev) => ({ ...prev, avatar: 'Please upload an image file.' }));
+			return;
+		}
+		if (file.size > 5 * 1024 * 1024) {
+			setErrors((prev) => ({ ...prev, avatar: 'Image must be under 5 MB.' }));
+			return;
+		}
+		setErrors((prev) => ({ ...prev, avatar: undefined }));
+		const reader = new FileReader();
+		reader.onload = () => {
+			const result = reader.result as string;
+			setAvatarPreview(result);
+			setAvatarBase64(result);
+		};
+		reader.readAsDataURL(file);
+	};
+
+	const validate = (): FieldErrors => {
+		const e: FieldErrors = {};
+		if (!NAME_RE.test(fullName.trim())) {e.fullName = 'Enter a valid full name (letters, spaces, hyphens, 2–50 chars).';}
+		if (!EMAIL_RE.test(email.trim())) {e.email = 'Enter a valid email address.';}
+		if (!PASSWORD_RE.test(password)) {e.password = 'Password must be at least 8 characters and include a letter and a number.';}
+		if (password !== repeatPassword) {e.repeatPassword = 'Passwords do not match.';}
+		return e;
+	};
+
+	const handleSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
+		e.preventDefault();
+
+		const fieldErrors = validate();
+		setErrors(fieldErrors);
+		if (Object.keys(fieldErrors).length > 0) {return;}
+
+		setSubmitted(true);
+		setTimeout(() => {
+			login(email.trim(), fullName.trim(), avatarBase64);
+			navigate('/dashboard');
+		}, 800);
+	};
+
+	const passwordStrength = (() => {
+		if (!password) {return 0;}
+		let score = 0;
+
+		if (password.length >= 8) {score++;}
+		if (/[A-Z]/.test(password)) {score++;}
+		if (/\d/.test(password)) {score++;}
+		if (/[^A-Za-z0-9]/.test(password)) {score++;}
+		return score;
+	})();
+
+	const strengthLabel = ['', 'Weak', 'Fair', 'Good', 'Strong'][passwordStrength];
+	const strengthColor = ['', 'bg-red-400', 'bg-amber-400', 'bg-teal-400', 'bg-teal-600'][passwordStrength];
+
+	return (
+		<main className='flex-1 flex items-center justify-center py-12 px-4'>
+			<div className='w-full max-w-md'>
+				{/* Header */}
+				<div className='text-center mb-8'>
+					<Link to='/' className='inline-block text-xl font-medium text-slate-900 hover:text-teal-600 transition-colors mb-6'>
+						NeighbourHelp
+					</Link>
+					<h1 className='text-2xl font-semibold text-slate-900 mb-2'>Create your account</h1>
+					<p className='text-slate-500 text-sm'>Join your neighbourhood community today</p>
+				</div>
+
+				{/* Card */}
+				<div className='bg-white border border-slate-200 rounded-xl shadow-sm p-8'>
+					<form onSubmit={handleSubmit} noValidate className='space-y-5'>
+
+						{/* Avatar upload */}
+						<div className='flex flex-col items-center gap-3 pb-2'>
+							<button
+								type='button'
+								onClick={() => fileInputRef.current?.click()}
+								className='relative group w-20 h-20 rounded-full bg-slate-100 border-2 border-dashed border-slate-300 hover:border-teal-500 transition-colors flex items-center justify-center overflow-hidden focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2'
+							>
+								{avatarPreview ? (
+									<>
+										<img src={avatarPreview} alt='Profile preview' className='w-full h-full object-cover' />
+										<div className='absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center'>
+											<UploadIcon className='w-5 h-5 text-white' />
+										</div>
+									</>
+								) : (
+									<div className='flex flex-col items-center gap-1 text-slate-400 group-hover:text-teal-500 transition-colors'>
+										<UserCircleIcon className='w-8 h-8' />
+										<UploadIcon className='w-3.5 h-3.5' />
+									</div>
+								)}
+							</button>
+							<span className='text-xs text-slate-400'>
+								{avatarPreview ? 'Click to change photo' : 'Add profile photo (optional)'}
+							</span>
+							{errors.avatar && <p className='text-xs text-red-500'>{errors.avatar}</p>}
+							<input
+								ref={fileInputRef}
+								type='file'
+								accept='image/*'
+								className='hidden'
+								onChange={handleAvatarChange}
+							/>
+						</div>
+
+						{/* Full name */}
+						<FormInput
+							value={fullName}
+							onChange={(e) => setFullName(e.target.value)}
+							label={'Full Name'}
+							placeholder='Jane Smith'
+							type='text'
+							errors={errors}
+						/>
+
+						{/* Email */}
+						<FormInput
+							value={email}
+							onChange={(e) => setEmail(e.target.value)}
+							label={'Email address'}
+							placeholder='jane@example.com'
+							type='text'
+							errors={errors}
+						/>
+
+						{/* Password */}
+						<FormInput
+							value={password}
+							onChange={(e) => setPassword(e.target.value)}
+							label={'Password'}
+							placeholder='Min. 8 characters'
+							type='password'
+							errors={errors}
+						/>
+
+						{/* Strength bar */}
+						{password && (
+							<div className='space-y-1 pt-0.5'>
+								<div className='flex gap-1'>
+									{[1, 2, 3, 4].map((i) => (
+										<div
+											key={i}
+											className={`h-1 flex-1 rounded-full transition-colors ${
+												i <= passwordStrength ? strengthColor : 'bg-slate-200'
+											}`}
+										/>
+									))}
+								</div>
+								<p className='text-xs text-slate-400'>{strengthLabel}</p>
+							</div>
+						)}
+						{errors.password && <p className='text-xs text-red-500 mt-1'>{errors.password}</p>}
+
+						{/* Repeat password */}
+						<FormInput
+							value={repeatPassword}
+							onChange={(e) => setRepeatPassword(e.target.value)}
+							label={'Confirm password'}
+							placeholder='Repeat your password'
+							type='password'
+							errors={errors}
+						/>
+
+
+						{errors.repeatPassword && <p className='text-xs text-red-500 mt-1'>{errors.repeatPassword}</p>}
+
+						{/* Submit */}
+						<button
+							type='submit'
+							disabled={submitted}
+							className='w-full py-2.5 bg-teal-600 hover:bg-teal-700 disabled:bg-teal-400 text-white text-sm font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 mt-2'
+						>
+							{submitted ? 'Creating account…' : 'Create account'}
+						</button>
+					</form>
+
+					{/* Divider + login link */}
+					<p className='text-center text-sm text-slate-500 mt-6'>
+						Already have an account?{' '}
+						<Link to='/login' className='text-teal-600 hover:text-teal-700 font-medium transition-colors'>
+							Sign in
+						</Link>
+					</p>
+				</div>
+			</div>
+		</main>
+	);
+};
+
+export default Register;

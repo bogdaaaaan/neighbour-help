@@ -1,6 +1,6 @@
 import type { Category } from '@/types/common';
 
-import CategoryButton from '@/components/Buttons/CategoryButton/CategoryButton';
+import CategoryButton from '@/components/Buttons/CategoryButton';
 import { StarIcon } from 'lucide-react';
 
 interface CategoryFilterProps {

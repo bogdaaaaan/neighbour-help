@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import type { HelpRequest } from '@/types/common';
 
-import CategoryFilter from '@/components/Layouts/CategoryFilter/CategoryFilter';
-import HelpRequestCard from '@/components/Cards/HelpRequestCard/HelpRequestCard';
-import { RequestModal } from '@/components/Modals/Request/RequestModal';
+import CategoryFilter from '@/components/Layouts/CategoryFilter';
+import HelpRequestCard from '@/components/Cards/HelpRequestCard';
+import { RequestModal } from '@/components/Modals/RequestModal';
 
 import { categories, helpRequests } from '@/utils/help_requests';
 
