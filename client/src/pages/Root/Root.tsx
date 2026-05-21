@@ -1,19 +1,22 @@
 import { Outlet } from 'react-router';
 
-import Navbar from '@/components/Layouts/Navbar/Navbar';
-import Footer from '@/components/Layouts/Footer/Footer';
+import Navbar from '@/components/Layouts/Navbar';
+import Footer from '@/components/Layouts/Footer';
+import { AuthProvider } from '@/context/AuthContext';
 
 const Root = () => {
 	return (
-		<div className='min-h-screen flex flex-col'>
-			<Navbar/>
+		<AuthProvider>
+			<div className='min-h-screen flex flex-col'>
+				<Navbar/>
 
-			<main className='flex-1'>
-				<Outlet />
-			</main>
+				<main className='flex-1'>
+					<Outlet />
+				</main>
 
-			<Footer/>
-		</div>
+				<Footer/>
+			</div>
+		</AuthProvider>
 
 	);
 };
