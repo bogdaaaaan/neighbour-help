@@ -19,7 +19,7 @@ export default tseslint.config(
 			prettier: prettierPlugin,
 		},
 		rules: {
-			'no-unused-vars': ['error', { argsIgnorePattern: '^_$' }],
+			'no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
 			quotes: ['error', 'single'],
 			semi: ['error', 'always'],
 			indent: ['error', 'tab', { 'SwitchCase': 1 }],
