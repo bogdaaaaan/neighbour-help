@@ -46,7 +46,6 @@ const Input = ({ value, onChange, label, placeholder, type, errors }: InputProps
 						)}
 					</button>
 				)}
-
 			</div>
 		</div>
 	);

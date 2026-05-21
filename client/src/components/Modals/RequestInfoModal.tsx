@@ -2,10 +2,10 @@ import { X, MapPinIcon, ClockIcon, UserIcon } from 'lucide-react';
 import type { HelpRequest } from '@/types/common';
 
 interface RequestModalProps {
-  request: HelpRequest;
-  categoryLabel: string;
-  isOpen: boolean;
-  onClose: () => void;
+	request: HelpRequest;
+	categoryLabel: string;
+	isOpen: boolean;
+	onClose: () => void;
 }
 
 const RequestInfoModal = ({ request, categoryLabel, isOpen, onClose }: RequestModalProps) => {

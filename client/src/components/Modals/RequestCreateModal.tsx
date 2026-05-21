@@ -8,9 +8,9 @@ import { categories, formatDate } from '@/utils/common';
 const DESCRIPTION_MAX = 400;
 
 interface FieldErrors {
-  title?: string;
-  category?: string;
-  description?: string;
+	title?: string;
+	category?: string;
+	description?: string;
 }
 
 const RequestCreateModal = () => {
@@ -80,7 +80,7 @@ const RequestCreateModal = () => {
 					</div>
 					<button
 						onClick={closeCreateModal}
-						className='w-8 h-8 flex items-center justify-center rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors'
+						className='w-8 h-8 flex items-center justify-center rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors cursor-pointer'
 					>
 						<X className='w-4 h-4' />
 					</button>
@@ -124,7 +124,7 @@ const RequestCreateModal = () => {
 											key={id}
 											type='button'
 											onClick={() => setCategory(id)}
-											className={`flex flex-col items-center gap-1.5 py-3 px-2 rounded-xl border text-xs font-medium transition-all focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-0 ${
+											className={`cursor-pointer flex flex-col items-center gap-1.5 py-3 px-2 rounded-xl border text-xs font-medium transition-all focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-0 ${
 												active
 													? 'border-teal-600 bg-teal-50 text-teal-700'
 													: 'border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:bg-slate-50'
@@ -170,14 +170,14 @@ const RequestCreateModal = () => {
 						<button
 							type='button'
 							onClick={closeCreateModal}
-							className='px-4 py-2.5 border border-slate-200 text-slate-600 text-sm font-medium rounded-lg hover:border-slate-300 hover:bg-slate-50 transition-colors'
+							className='cursor-pointer px-4 py-2.5 border border-slate-200 text-slate-600 text-sm font-medium rounded-lg hover:border-slate-300 hover:bg-slate-50 transition-colors'
 						>
 							Cancel
 						</button>
 						<button
 							type='submit'
 							disabled={submitted}
-							className='flex-1 py-2.5 bg-teal-600 hover:bg-teal-700 disabled:bg-teal-400 text-white text-sm font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2'
+							className='cursor-pointer flex-1 py-2.5 bg-teal-600 hover:bg-teal-700 disabled:bg-teal-400 text-white text-sm font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2'
 						>
 							{submitted ? 'Posted!' : 'Post Request'}
 						</button>

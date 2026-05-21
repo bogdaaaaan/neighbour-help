@@ -26,13 +26,13 @@ const Profile = () => {
 							onClick={() => navigate('/auth')}
 							className='px-5 py-2.5 bg-teal-600 text-white text-sm font-medium rounded-lg hover:bg-teal-700 transition-colors'
 						>
-						Create account
+							Create account
 						</button>
 						<button
 							onClick={() => navigate('/login')}
 							className='px-5 py-2.5 border border-slate-200 text-slate-700 text-sm font-medium rounded-lg hover:border-slate-300 transition-colors'
 						>
-						Sign in
+							Sign in
 						</button>
 					</div>
 				</div>

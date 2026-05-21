@@ -1,4 +1,5 @@
 import { createBrowserRouter } from 'react-router';
+
 import Root from './pages/Root/Root';
 import Dashboard from './pages/Dashboard/Dashboard';
 import Profile from './pages/Profile/Profile';

@@ -36,10 +36,10 @@ const RequestsProvider = ({ children }: { children: React.ReactNode }) => {
 	);
 };
 
-export function useRequests() {
+export const useRequests = () => {
 	const ctx = useContext(RequestsContext);
 	if (!ctx) {throw new Error('useRequests must be used within RequestsProvider');}
 	return ctx;
-}
+};
 
 export default RequestsProvider;

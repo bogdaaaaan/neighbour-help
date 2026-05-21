@@ -6,9 +6,9 @@ import FormInput from '@/components/Inputs/FormInput';
 const EMAIL_RE = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
 interface FieldErrors {
-  email?: string;
-  password?: string;
-  form?: string;
+	email?: string;
+	password?: string;
+	form?: string;
 }
 
 const Login = () => {
@@ -20,14 +20,14 @@ const Login = () => {
 	const [errors, setErrors] = useState<FieldErrors>({});
 	const [submitting, setSubmitting] = useState(false);
 
-	function validate(): FieldErrors {
+	const validate = (): FieldErrors => {
 		const e: FieldErrors = {};
 		if (!EMAIL_RE.test(email.trim())) {e.email = 'Enter a valid email address.';}
 		if (password.length < 1) {e.password = 'Password is required.';}
 		return e;
-	}
+	};
 
-	function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
+	const handleSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
 		e.preventDefault();
 		const fieldErrors = validate();
 		setErrors(fieldErrors);
@@ -47,7 +47,7 @@ const Login = () => {
 			setErrors({ form: 'No account found with that email. Please register first.' });
 			setSubmitting(false);
 		}, 600);
-	}
+	};
 
 	return (
 		<main className='flex-1 flex items-center justify-center py-12 px-4'>

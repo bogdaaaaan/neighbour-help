@@ -5,7 +5,7 @@ import { useAuth } from '@/context/AuthContext';
 import { useRequests } from '@/context/RequestsProvider';
 
 const Home = () => {
-	  const navigate = useNavigate();
+	const navigate = useNavigate();
 	const { isAuthenticated } = useAuth();
 	const { openCreateModal } = useRequests();
 
@@ -37,7 +37,7 @@ const Home = () => {
 					</Link>
 					<button
 						onClick={handlePostRequest}
-						className='px-6 py-3 bg-white text-slate-900 border border-slate-200 rounded-lg hover:border-teal-600 transition-colors'
+						className='px-6 py-3 bg-white text-slate-900 border border-slate-200 rounded-lg hover:border-teal-600 transition-colors cursor-pointer'
 					>
 						Post a Request
 					</button>

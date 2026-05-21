@@ -1,9 +1,10 @@
 import { Outlet } from 'react-router';
 
-import Navbar from '@/components/Layouts/Navbar';
-import Footer from '@/components/Layouts/Footer';
 import AuthProvider from '@/context/AuthContext';
 import RequestsProvider from '@/context/RequestsProvider';
+
+import Navbar from '@/components/Layouts/Navbar';
+import Footer from '@/components/Layouts/Footer';
 import RequestCreateModal from '@/components/Modals/RequestCreateModal';
 
 const Root = () => {
@@ -23,7 +24,6 @@ const Root = () => {
 				</div>
 			</RequestsProvider>
 		</AuthProvider>
-
 	);
 };
 
