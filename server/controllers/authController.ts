@@ -57,4 +57,66 @@ const registerUser = async (req: Request, res: Response): Promise<void> => {
 	}
 };
 
-export { registerUser };
+// @desc    Login user
+// @route   POST /api/auth/login
+// @access  Public
+const loginUser = async (req: Request, res: Response): Promise<void> => {
+	try {
+		const { email, password } = req.body;
+
+		// Check if user exists
+		const user: UserDocument | null = await User.findOne({ email });
+		if (!user) {
+			res.status(401).json({ message: 'Invalid credentials' });
+			return;
+		}
+
+		// Compare password
+		const isMatch = await bcrypt.compare(password, user.password);
+		if (!isMatch) {
+			res.status(401).json({ message: 'Invalid credentials' });
+			return;
+		}
+
+		// Return user data and JWT token
+		res.json({
+			id: user._id,
+			name: user.name,
+			email: user.email,
+			profileImageUrl: user.profileImageUrl,
+			token: generateToken(user._id),
+		});
+	} catch (error) {
+		console.error('Error registering a user: ', error);
+	}
+};
+
+// @desc    Get user profile
+// @route   GET /api/auth/profile
+// @access  Private (Requires JWT)
+const getUserProfile = async (req: Request, res: Response): Promise<void> => {
+	try {
+		if (!req.user || !req.user._id) {
+			res.status(401).json({ message: 'Unauthorized' });
+			return;
+		}
+
+		const user: UserDocument = await User.findById(req.user._id).select('-password');
+		if (!user) {
+			res.status(404).json({ message: 'User not found' });
+			return;
+		}
+
+		res.json({
+			id: user._id,
+			name: user.name,
+			email: user.email,
+			profileImageUrl: user.profileImageUrl,
+			token: generateToken(user._id),
+		});
+	} catch (error) {
+		console.error('Error registering a user: ', error);
+	}
+};
+
+export { registerUser, loginUser, getUserProfile };
