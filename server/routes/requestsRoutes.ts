@@ -1,6 +1,6 @@
 import express from 'express';
 
-import { createRequest, getAllRequests, getRequestById, updateRequest, deleteRequest, getUserRequests, getMyRequests } from '@/controllers/requestsController';
+import { createRequest, getAllRequests, getRequestById, updateRequest, deleteRequest, getUserRequests, getMyRequests, acceptRequest, cancelRequest, completeRequest } from '@/controllers/requestsController';
 
 import { protect } from '@/middleware/authMiddleware';
 
@@ -16,6 +16,10 @@ router.get('/', getAllRequests);
 router.get('/user/:userId', getUserRequests);
 router.get('/:id', getRequestById);
 
+// Helper routes
+router.put('/:id/accept', protect, acceptRequest);
+router.put('/:id/cancel', protect, cancelRequest);
+router.put('/:id/complete', protect, completeRequest);
 
 // Private routes (require authentication)
 router.put('/:id', protect, updateRequest);

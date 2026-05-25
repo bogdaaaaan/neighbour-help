@@ -6,6 +6,7 @@ export interface RequestDocument extends Document {
 	description: string;
 	author: Types.ObjectId;
 	status: 'open' | 'in-progress' | 'completed' | 'closed';
+	helper?: Types.ObjectId;
 	createdAt: Date;
 	updatedAt: Date;
 }
@@ -32,6 +33,11 @@ const RequestSchema = new mongoose.Schema({
 		type: String,
 		enum: ['open', 'in-progress', 'completed', 'closed'],
 		default: 'open',
+	},
+	helper: {
+		type: mongoose.Schema.Types.ObjectId,
+		ref: 'User',
+		default: null,
 	},
 }, { timestamps: true });
 

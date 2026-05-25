@@ -17,6 +17,133 @@ const getAllRequests = async (req: Request, res: Response): Promise<void> => {
 	}
 };
 
+// @desc    Accept a help request (take the request)
+// @route   PUT /api/requests/:id/accept
+// @access  Private (Requires JWT)
+const acceptRequest = async (req: Request, res: Response): Promise<void> => {
+	try {
+		if (!req.user || !req.user._id) {
+			res.status(401).json({ message: 'Unauthorized' });
+			return;
+		}
+
+		const { id } = req.params;
+
+		const request = await RequestModel.findById(id);
+
+		if (!request) {
+			res.status(404).json({ message: 'Request not found' });
+			return;
+		}
+
+		if (request.author.toString() === req.user._id.toString()) {
+			res.status(400).json({ message: 'You cannot accept your own request' });
+			return;
+		}
+
+		if (request.status !== 'open') {
+			res.status(400).json({ message: 'Request is not available' });
+			return;
+		}
+
+		request.status = 'in-progress';
+		request.helper = req.user._id;
+
+		await request.save();
+
+		const populatedRequest = await RequestModel.findById(id)
+			.populate('author', 'name email profileImageUrl')
+			.populate('helper', 'name email profileImageUrl');
+
+		res.json(populatedRequest);
+	} catch (error) {
+		console.error('Error accepting request: ', error);
+		res.status(500).json({ message: 'Error accepting request' });
+	}
+};
+
+// @desc    Cancel helping on a request
+// @route   PUT /api/requests/:id/cancel
+// @access  Private (Requires JWT, helper only)
+const cancelRequest = async (req: Request, res: Response): Promise<void> => {
+	try {
+		if (!req.user || !req.user._id) {
+			res.status(401).json({ message: 'Unauthorized' });
+			return;
+		}
+
+		const { id } = req.params;
+
+		const request = await RequestModel.findById(id);
+
+		if (!request) {
+			res.status(404).json({ message: 'Request not found' });
+			return;
+		}
+
+		if (request.helper?.toString() !== req.user._id.toString()) {
+			res.status(403).json({ message: 'Not authorized to cancel this request' });
+			return;
+		}
+
+		request.status = 'open';
+		request.helper = undefined;
+
+		await request.save();
+
+		const populatedRequest = await RequestModel.findById(id)
+			.populate('author', 'name email profileImageUrl')
+			.populate('helper', 'name email profileImageUrl');
+
+		res.json(populatedRequest);
+	} catch (error) {
+		console.error('Error canceling request: ', error);
+		res.status(500).json({ message: 'Error canceling request' });
+	}
+};
+
+// @desc    Complete a help request
+// @route   PUT /api/requests/:id/complete
+// @access  Private (Requires JWT, author or helper)
+const completeRequest = async (req: Request, res: Response): Promise<void> => {
+	try {
+		if (!req.user || !req.user._id) {
+			res.status(401).json({ message: 'Unauthorized' });
+			return;
+		}
+
+		const { id } = req.params;
+
+		const request = await RequestModel.findById(id);
+
+		if (!request) {
+			res.status(404).json({ message: 'Request not found' });
+			return;
+		}
+
+		const isAuthor = request.author.toString() === req.user._id.toString();
+		const isHelper = request.helper?.toString() === req.user._id.toString();
+
+		if (!isAuthor && !isHelper) {
+			res.status(403).json({ message: 'Not authorized to complete this request' });
+			return;
+		}
+
+		request.status = 'completed';
+
+		await request.save();
+
+		const populatedRequest = await RequestModel.findById(id)
+			.populate('author', 'name email profileImageUrl')
+			.populate('helper', 'name email profileImageUrl');
+
+		res.json(populatedRequest);
+	} catch (error) {
+		console.error('Error completing request: ', error);
+		res.status(500).json({ message: 'Error completing request' });
+	}
+};
+
 // @desc    Get request by ID
 // @route   GET /api/requests/:id
 // @access  Public
@@ -203,4 +330,7 @@ export {
 	deleteRequest,
 	getUserRequests,
 	getMyRequests,
+	acceptRequest,
+	cancelRequest,
+	completeRequest
 };
