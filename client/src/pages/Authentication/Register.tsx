@@ -5,6 +5,11 @@ import { useAuth } from '@/context/AuthContext';
 import type { FieldErrors } from '@/types/auth';
 import FormInput from '@/components/Inputs/FormInput';
 
+import axiosInstance from '@/utils/axiosInstance';
+import { API_PATHS } from '@/utils/apiPaths';
+import toast from 'react-hot-toast';
+import uploadImage from '@/utils/uploadImage';
+
 const EMAIL_RE = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 const NAME_RE = /^[a-zA-ZÀ-ÿ\s'-]{2,50}$/;
 const PASSWORD_RE = /^(?=.*[A-Za-z])(?=.*\d).{8,}$/;
@@ -15,7 +20,7 @@ const Register = () => {
 	const fileInputRef = useRef<HTMLInputElement>(null);
 
 	const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
-	const [avatarBase64, setAvatarBase64] = useState<string | undefined>(undefined);
+	const [avatarFile, setAvatarFile] = useState<File | null>(null);
 	const [fullName, setFullName] = useState('');
 	const [email, setEmail] = useState('');
 	const [password, setPassword] = useState('');
@@ -40,7 +45,7 @@ const Register = () => {
 		reader.onload = () => {
 			const result = reader.result as string;
 			setAvatarPreview(result);
-			setAvatarBase64(result);
+			setAvatarFile(file);
 		};
 		reader.readAsDataURL(file);
 	};
@@ -54,7 +59,7 @@ const Register = () => {
 		return e;
 	};
 
-	const handleSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
+	const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
 		e.preventDefault();
 
 		const fieldErrors = validate();
@@ -62,10 +67,38 @@ const Register = () => {
 		if (Object.keys(fieldErrors).length > 0) {return;}
 
 		setSubmitted(true);
-		setTimeout(() => {
-			login(email.trim(), fullName.trim(), avatarBase64);
+
+		// api call
+		try {
+			// Upload image if provided
+			let profileImageUrl = undefined;
+			if (avatarFile) {
+				try {
+					const uploadResponse = await uploadImage(avatarFile);
+					profileImageUrl = uploadResponse.imageUrl;
+				} catch (error) {
+					console.error(error);
+					toast.error('Image upload failed, continuing without image');
+				}
+			}
+
+			const response = await axiosInstance.post(API_PATHS.AUTH.REGISTER, {
+				name: fullName.trim(),
+				email: email.trim(),
+				password: password,
+				profileImageUrl: profileImageUrl,
+			});
+
+			localStorage.setItem('token', response.data.token);
+			localStorage.setItem('userId', response.data.id);
+			localStorage.setItem('userName', response.data.name);
+
+			login(response.data.email, response.data.name, response.data.profileImageUrl);
+			toast.success('Registration successful!');
 			navigate('/dashboard');
-		}, 800);
+		} catch (error) {
+			console.error(error);
+		}
 	};
 
 	const passwordStrength = (() => {

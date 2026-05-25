@@ -2,6 +2,9 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router';
 import { useAuth } from '@/context/AuthContext';
 import FormInput from '@/components/Inputs/FormInput';
+import axiosInstance from '@/utils/axiosInstance';
+import { API_PATHS } from '@/utils/apiPaths';
+import toast from 'react-hot-toast';
 
 const EMAIL_RE = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
@@ -18,7 +21,7 @@ const Login = () => {
 	const [email, setEmail] = useState('');
 	const [password, setPassword] = useState('');
 	const [errors, setErrors] = useState<FieldErrors>({});
-	const [submitting, setSubmitting] = useState(false);
+	const [submitted, setSubmitted] = useState(false);
 
 	const validate = (): FieldErrors => {
 		const e: FieldErrors = {};
@@ -27,26 +30,30 @@ const Login = () => {
 		return e;
 	};
 
-	const handleSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
+	const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
 		e.preventDefault();
+
 		const fieldErrors = validate();
 		setErrors(fieldErrors);
 		if (Object.keys(fieldErrors).length > 0) {return;}
 
-		setSubmitting(true);
-		setTimeout(() => {
-			const stored = localStorage.getItem('nh_user');
-			if (stored) {
-				const user = JSON.parse(stored);
-				if (user.email === email.trim()) {
-					login(user.email, user.fullName, user.avatar);
-					navigate('/');
-					return;
-				}
-			}
-			setErrors({ form: 'No account found with that email. Please register first.' });
-			setSubmitting(false);
-		}, 600);
+		setSubmitted(true);
+
+		// api call
+		try {
+			const response = await axiosInstance.post(API_PATHS.AUTH.LOGIN, { email, password });
+
+			localStorage.setItem('token', response.data.token);
+			localStorage.setItem('userId', response.data.id);
+			localStorage.setItem('userName', response.data.name);
+
+			login(response.data.email, response.data.name, response.data.profileImageUrl);
+
+			toast.success('Login successful!');
+			navigate('/dashboard');
+		} catch (error) {
+			console.error(error);
+		}
 	};
 
 	return (
@@ -95,10 +102,10 @@ const Login = () => {
 						{/* Submit */}
 						<button
 							type='submit'
-							disabled={submitting}
+							disabled={submitted}
 							className='w-full py-2.5 bg-teal-600 hover:bg-teal-700 disabled:bg-teal-400 text-white text-sm font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 mt-2'
 						>
-							{submitting ? 'Signing in…' : 'Sign in'}
+							{submitted ? 'Signing in…' : 'Sign in'}
 						</button>
 					</form>
 
