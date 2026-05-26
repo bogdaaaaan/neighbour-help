@@ -43,14 +43,14 @@ const RequestsProvider = ({ children }: { children: React.ReactNode }) => {
 				const response = await axiosInstance.get(API_PATHS.REQUESTS.GET_REQUESTS);
 
 				if (!response.data) {
-					throw Error('Error fetching session');
+					throw Error('Error fetching requests');
 				}
 
 				const mappedRequests = response.data.map(mapRequest);
 				// console.log(mappedRequests);
 				setRequests(mappedRequests);
 			} catch (error) {
-				toast.error('Failed to fetch all sessions');
+				toast.error('Failed to fetch all requests');
 				console.error(error);
 			}
 		};

@@ -1,16 +1,40 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
-import { ClockIcon, CheckCircleIcon } from 'lucide-react';
+import { ClockIcon } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 
-import { completedRequests, myRequests } from '@/utils/user_data';
 import { EmptyState, RequestRow } from './utils';
+import type { HelpRequest } from '@/types/common';
+import axiosInstance from '@/utils/axiosInstance';
+import { API_PATHS } from '@/utils/apiPaths';
+import { mapRequest } from '@/utils/mapper';
 
 
 const Profile = () => {
 	const { user, isAuthenticated } = useAuth();
 	const navigate = useNavigate();
-	const [activeTab, setActiveTab] = useState<'created' | 'done'>('created');
+	const [myRequests, setMyRequests] = useState<HelpRequest[]>([]);
+
+	useEffect(() => {
+		const getUserRequests = async () => {
+			try {
+				const response = await axiosInstance.get(API_PATHS.REQUESTS.GET_USER_REQUESTS(user!.id));
+
+				if (!response.data) {
+					throw Error('Error fetching request');
+				}
+
+				const mappedRequests = response.data.map(mapRequest);
+				console.log(mappedRequests);
+
+				setMyRequests(mappedRequests);
+			} catch (error) {
+				console.error(error);
+			}
+		};
+
+		getUserRequests();
+	}, [user]);
 
 	if (!isAuthenticated) {
 		return (
@@ -82,10 +106,6 @@ const Profile = () => {
 								<p className='text-xs text-slate-500'>Currently open</p>
 							</div>
 							<div className='w-px bg-slate-200' />
-							<div className='text-center sm:text-left'>
-								<p className='text-lg font-semibold text-slate-900'>{completedRequests.length}</p>
-								<p className='text-xs text-slate-500'>Neighbours helped</p>
-							</div>
 						</div>
 					</div>
 				</div>
@@ -94,66 +114,27 @@ const Profile = () => {
 			{/* Tabs */}
 			<div className='flex gap-1 bg-slate-100 p-1 rounded-xl mb-5'>
 				<button
-					onClick={() => setActiveTab('created')}
-					className={`flex-1 flex items-center justify-center gap-2 py-2 px-4 rounded-lg text-sm font-medium transition-colors ${
-						activeTab === 'created'
-							? 'bg-white text-slate-900 shadow-sm'
-							: 'text-slate-500 hover:text-slate-700'
-					}`}
+					className={'flex-1 flex items-center justify-center gap-2 py-2 px-4 rounded-lg text-sm font-medium transition-colors bg-white text-slate-900 shadow-sm'}
 				>
 					My Requests
-					<span className={`text-xs px-1.5 py-0.5 rounded-full font-medium ${
-						activeTab === 'created' ? 'bg-teal-50 text-teal-700' : 'bg-slate-200 text-slate-500'
-					}`}>
+					<span className={'text-xs px-1.5 py-0.5 rounded-full font-medium \'bg-teal-50 text-teal-700\''}>
 						{myRequests.length}
 					</span>
 				</button>
-				<button
-					onClick={() => setActiveTab('done')}
-					className={`flex-1 flex items-center justify-center gap-2 py-2 px-4 rounded-lg text-sm font-medium transition-colors ${
-						activeTab === 'done'
-							? 'bg-white text-slate-900 shadow-sm'
-							: 'text-slate-500 hover:text-slate-700'
-					}`}
-				>
-					<CheckCircleIcon className='w-4 h-4' />
-						Helped With
-					<span className={`text-xs px-1.5 py-0.5 rounded-full font-medium ${
-						activeTab === 'done' ? 'bg-teal-50 text-teal-700' : 'bg-slate-200 text-slate-500'
-					}`}>
-						{completedRequests.length}
-					</span>
-				</button>
+
 			</div>
 
-			{/* Tab content */}
-			{activeTab === 'created' && (
-				<div className='space-y-3'>
-					{myRequests.length === 0 ? (
-						<EmptyState
-							message="You haven't posted any requests yet."
-							actionLabel='Post your first request'
-							actionTo='/create'
-						/>
-					) : (
-						myRequests.map((r) => <RequestRow key={r.id} request={r} />)
-					)}
-				</div>
-			)}
-
-			{activeTab === 'done' && (
-				<div className='space-y-3'>
-					{completedRequests.length === 0 ? (
-						<EmptyState
-							message="You haven't helped with any requests yet."
-							actionLabel='Browse requests'
-							actionTo='/dashboard'
-						/>
-					) : (
-						completedRequests.map((r) => <RequestRow key={r.id} request={r} />)
-					)}
-				</div>
-			)}
+			<div className='space-y-3'>
+				{myRequests.length === 0 ? (
+					<EmptyState
+						message="You haven't posted any requests yet."
+						actionLabel='Post your first request'
+						actionTo='/dashboard'
+					/>
+				) : (
+					myRequests.map((r) => <RequestRow key={r.id} request={r} />)
+				)}
+			</div>
 		</main>
 	);
 };

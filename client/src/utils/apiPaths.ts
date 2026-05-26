@@ -18,8 +18,11 @@ export const API_PATHS = {
 	},
 
 	REQUESTS: {
-		// Get paginated requests
+		// Get requests
 		GET_REQUESTS: '/api/requests/',
+
+		// Get requests by user
+		GET_USER_REQUESTS: (id: string) => `/api/requests/user/${id}`,
 
 		// Create new request
 		CREATE_REQUEST: '/api/requests/create',
