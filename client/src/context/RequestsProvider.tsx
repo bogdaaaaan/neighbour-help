@@ -1,6 +1,9 @@
-import { helpRequests } from '@/utils/help_requests';
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
 import type { HelpRequest } from '@/types/common';
+import axiosInstance from '@/utils/axiosInstance';
+import { API_PATHS } from '@/utils/apiPaths';
+import toast from 'react-hot-toast';
+import { mapRequest } from '@/utils/mapper';
 
 
 interface RequestsContextType {
@@ -14,12 +17,46 @@ interface RequestsContextType {
 const RequestsContext = createContext<RequestsContextType | null>(null);
 
 const RequestsProvider = ({ children }: { children: React.ReactNode }) => {
-	const [requests, setRequests] = useState<HelpRequest[]>(helpRequests);
+	const [requests, setRequests] = useState<HelpRequest[]>([]);
 	const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
-	const addRequest = (req: Omit<HelpRequest, 'id'>) => {
-		setRequests((prev) => [{ ...req, id: Date.now() }, ...prev]);
+	const addRequest = async (req: Omit<HelpRequest, 'id'>) => {
+		try {
+			const response = await axiosInstance.post(API_PATHS.REQUESTS.CREATE_REQUEST, {
+				...req,
+				author: req.author._id,
+			});
+
+			console.log(req);
+
+			const newRequest = response.data;
+			setRequests((prev) => [newRequest, ...prev]);
+			toast.success('Request posted successfully!');
+		} catch (error) {
+			console.error(error);
+		}
 	};
+
+	useEffect(() => {
+		const loadRequests = async () => {
+			try {
+				const response = await axiosInstance.get(API_PATHS.REQUESTS.GET_REQUESTS);
+
+				if (!response.data) {
+					throw Error('Error fetching session');
+				}
+
+				const mappedRequests = response.data.map(mapRequest);
+				// console.log(mappedRequests);
+				setRequests(mappedRequests);
+			} catch (error) {
+				toast.error('Failed to fetch all sessions');
+				console.error(error);
+			}
+		};
+
+		loadRequests();
+	}, []);
 
 	return (
 		<RequestsContext.Provider

@@ -93,7 +93,7 @@ const Register = () => {
 			localStorage.setItem('userId', response.data.id);
 			localStorage.setItem('userName', response.data.name);
 
-			login(response.data.email, response.data.name, response.data.profileImageUrl);
+			login(response.data.id, response.data.email, response.data.name, response.data.profileImageUrl);
 			toast.success('Registration successful!');
 			navigate('/dashboard');
 		} catch (error) {

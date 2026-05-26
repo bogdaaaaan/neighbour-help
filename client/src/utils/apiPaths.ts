@@ -16,4 +16,12 @@ export const API_PATHS = {
 		// Upload image
 		UPLOAD_IMAGE: '/api/auth/upload-image'
 	},
+
+	REQUESTS: {
+		// Get paginated requests
+		GET_REQUESTS: '/api/requests/',
+
+		// Create new request
+		CREATE_REQUEST: '/api/requests/create',
+	},
 };

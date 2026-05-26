@@ -23,7 +23,7 @@ const HelpRequestCard = ({ request, categoryLabel, onViewDetails }: HelpRequestC
 
 			<div className='flex items-center justify-between pt-4 border-t border-slate-100'>
 				<div className='text-sm'>
-					<p className='text-slate-900'>{request.author}</p>
+					<p className='text-slate-900'>{request.author.name}</p>
 					<p className='text-slate-400'>{request.date}</p>
 				</div>
 

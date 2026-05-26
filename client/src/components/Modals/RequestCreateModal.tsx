@@ -4,6 +4,8 @@ import { X } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { useRequests } from '@/context/RequestsProvider';
 import { categories, formatDate } from '@/utils/common';
+import toast from 'react-hot-toast';
+import type { Author } from '@/types/common';
 
 const DESCRIPTION_MAX = 400;
 
@@ -47,17 +49,39 @@ const RequestCreateModal = () => {
 		setErrors(fieldErrors);
 		if (Object.keys(fieldErrors).length > 0) {return;}
 
-		addRequest({
-			title: title.trim(),
-			category,
-			description: description.trim(),
-			author: user?.fullName ?? 'Anonymous',
-			date: formatDate(new Date()),
-			status: 'open',
-		});
+		if (!user?.id) {
+			toast.error('User not authenticated');
+			return;
+		}
 
 		setSubmitted(true);
-		setTimeout(() => closeCreateModal(), 700);
+
+		try {
+			const _author: Author = {
+				_id: user.id,
+				name: user.fullName,
+				email: user.email
+			};
+
+			addRequest({
+				author: _author,
+				title: title.trim(),
+				category,
+				description: description.trim(),
+				status: 'open',
+				date: formatDate(new Date())
+			});
+
+			setTitle('');
+			setCategory('');
+			setDescription('');
+			setErrors({});
+
+			setTimeout(() => closeCreateModal(), 700);
+		} catch (error) {
+			setSubmitted(false);
+			console.error(error);
+		}
 	};
 
 	if (!isCreateModalOpen) {return null;}

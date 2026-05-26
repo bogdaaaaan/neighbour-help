@@ -3,7 +3,7 @@ import type { User } from '@/types/auth';
 
 interface AuthContextType {
 	user: User | null;
-	login: (_email: string, _fullName: string, _avatar?: string) => void;
+	login: (_id: string, _email: string, _fullName: string, _avatar?: string) => void;
 	logout: () => void;
 	isAuthenticated: boolean;
 }
@@ -16,8 +16,8 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 		return stored ? JSON.parse(stored) : null;
 	});
 
-	const login = (email: string, fullName: string, avatar?: string) => {
-		const newUser = { email, fullName, avatar };
+	const login = (id: string, email: string, fullName: string, avatar?: string) => {
+		const newUser = { id, email, fullName, avatar };
 		setUser(newUser);
 		localStorage.setItem('nh_user', JSON.stringify(newUser));
 	};
@@ -25,6 +25,9 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 	const logout = () => {
 		setUser(null);
 		localStorage.removeItem('nh_user');
+		localStorage.removeItem('token');
+		localStorage.removeItem('userId');
+		localStorage.removeItem('userName');
 	};
 
 	return (

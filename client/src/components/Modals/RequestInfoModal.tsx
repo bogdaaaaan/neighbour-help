@@ -43,7 +43,7 @@ const RequestInfoModal = ({ request, categoryLabel, isOpen, onClose }: RequestMo
 					<div className='flex flex-wrap gap-4 mb-6 text-sm'>
 						<div className='flex items-center gap-2 text-slate-600'>
 							<UserIcon className='w-4 h-4' />
-							<span>{request.author}</span>
+							<span>{request.author.name}</span>
 						</div>
 						<div className='flex items-center gap-2 text-slate-600'>
 							<ClockIcon className='w-4 h-4' />

@@ -6,12 +6,29 @@ export interface Category {
 	icon: LucideIcon;
 }
 
-export interface HelpRequest {
-	id: number;
+interface Author {
+	_id: string;
+	name: string;
+	email: string;
+}
+
+export interface HelpRequestApi {
+	_id: string;
 	title: string;
 	category: string;
 	description: string;
-	author: string;
-	date: string;
+	author: Author;
 	status: string;
+	createdAt: string;
+	updatedAt: string;
+}
+
+export interface HelpRequest {
+	id: string;
+	title: string;
+	category: string;
+	description: string;
+	author: Author;
+	status: string;
+	date: string;
 }
