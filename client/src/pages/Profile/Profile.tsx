@@ -1,41 +1,24 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import { ClockIcon } from 'lucide-react';
 
 import { useAuth } from '@/context/AuthContext';
 
-import type { HelpRequest } from '@/types/common';
+import { EmptyState, RequestRow } from './UserRequests';
 
-import { EmptyState, RequestRow } from './utils';
+import { useRequests } from '@/context/RequestsProvider';
 
-import axiosInstance from '@/utils/axiosInstance';
-import { API_PATHS } from '@/utils/apiPaths';
-import { mapRequest } from '@/utils/mapper';
 
 const Profile = () => {
 	const { user, isAuthenticated } = useAuth();
+	const { userRequests, loadUserRequests, deleteRequest } = useRequests();
 	const navigate = useNavigate();
-	const [myRequests, setMyRequests] = useState<HelpRequest[]>([]);
 
 	useEffect(() => {
-		const getUserRequests = async () => {
-			try {
-				const response = await axiosInstance.get(API_PATHS.REQUESTS.GET_USER_REQUESTS(user!.id));
-
-				if (!response.data) {
-					throw Error('Error fetching request');
-				}
-
-				const mappedRequests = response.data.map(mapRequest);
-
-				setMyRequests(mappedRequests);
-			} catch (error) {
-				console.error(error);
-			}
-		};
-
-		getUserRequests();
-	}, [user]);
+		if (user?.id) {
+			loadUserRequests(user.id);
+		}
+	});
 
 	if (!isAuthenticated) {
 		return (
@@ -72,7 +55,7 @@ const Profile = () => {
 		.slice(0, 2)
 		.toUpperCase();
 
-	const openCount = myRequests.filter((r) => r.status === 'open').length;
+	const openCount = userRequests.filter((r) => r.status === 'open').length;
 
 	return (
 		<main className='max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-10'>
@@ -98,7 +81,7 @@ const Profile = () => {
 						{/* Stats row */}
 						<div className='flex justify-center sm:justify-start gap-6 mt-4'>
 							<div className='text-center sm:text-left'>
-								<p className='text-lg font-semibold text-slate-900'>{myRequests.length}</p>
+								<p className='text-lg font-semibold text-slate-900'>{userRequests.length}</p>
 								<p className='text-xs text-slate-500'>Requests created</p>
 							</div>
 							<div className='w-px bg-slate-200' />
@@ -119,21 +102,21 @@ const Profile = () => {
 				>
 					My Requests
 					<span className={'text-xs px-1.5 py-0.5 rounded-full font-medium \'bg-teal-50 text-teal-700\''}>
-						{myRequests.length}
+						{userRequests.length}
 					</span>
 				</button>
 
 			</div>
 
 			<div className='space-y-3'>
-				{myRequests.length === 0 ? (
+				{userRequests.length === 0 ? (
 					<EmptyState
 						message="You haven't posted any requests yet."
 						actionLabel='Post your first request'
 						actionTo='/dashboard'
 					/>
 				) : (
-					myRequests.map((r) => <RequestRow key={r.id} request={r} />)
+					userRequests.map((r) => <RequestRow key={r.id} request={r} onDelete={deleteRequest} />)
 				)}
 			</div>
 		</main>

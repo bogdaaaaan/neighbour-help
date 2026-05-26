@@ -26,5 +26,8 @@ export const API_PATHS = {
 
 		// Create new request
 		CREATE_REQUEST: '/api/requests/create',
+
+		// Delete request by id
+		DELETE_REQUEST: (id: string) => `api/requests/${id}`
 	},
 };

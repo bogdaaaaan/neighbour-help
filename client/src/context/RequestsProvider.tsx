@@ -5,10 +5,15 @@ import { API_PATHS } from '@/utils/apiPaths';
 import toast from 'react-hot-toast';
 import { mapRequest } from '@/utils/mapper';
 
-
 interface RequestsContextType {
 	requests: HelpRequest[];
+	userRequests: HelpRequest[];
+
 	addRequest: (_req: Omit<HelpRequest, 'id'>) => void;
+	deleteRequest: (_req: HelpRequest) => void;
+
+	loadUserRequests: (_userId: string) => Promise<void>;
+
 	isCreateModalOpen: boolean;
 	openCreateModal: () => void;
 	closeCreateModal: () => void;
@@ -18,7 +23,25 @@ const RequestsContext = createContext<RequestsContextType | null>(null);
 
 const RequestsProvider = ({ children }: { children: React.ReactNode }) => {
 	const [requests, setRequests] = useState<HelpRequest[]>([]);
+	const [userRequests, setUserRequests] = useState<HelpRequest[]>([]);
 	const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+
+	const loadUserRequests = async (userId: string) => {
+		try {
+			const response = await axiosInstance.get(
+				API_PATHS.REQUESTS.GET_USER_REQUESTS(userId)
+			);
+
+			if (!response.data) {
+				throw new Error('Error fetching user requests');
+			}
+
+			const mapped = response.data.map(mapRequest);
+			setUserRequests(mapped);
+		} catch (error) {
+			console.error(error);
+		}
+	};
 
 	const addRequest = async (req: Omit<HelpRequest, 'id'>) => {
 		try {
@@ -31,6 +54,21 @@ const RequestsProvider = ({ children }: { children: React.ReactNode }) => {
 			setRequests((prev) => [newRequest, ...prev]);
 			toast.success('Request posted successfully!');
 		} catch (error) {
+			toast.error('Failed to posted a session');
+			console.error(error);
+		}
+	};
+
+	const deleteRequest = async (req: HelpRequest) => {
+		try {
+			const response = await axiosInstance.delete(API_PATHS.REQUESTS.DELETE_REQUEST(req.id));
+
+			if (response.data) {
+				setRequests(prev => prev.filter(r => r.id !== req.id));
+				toast.success('Request deleted successfully!');
+			}
+		} catch (error) {
+			toast.error('Failed to delete a request');
 			console.error(error);
 		}
 	};
@@ -60,7 +98,10 @@ const RequestsProvider = ({ children }: { children: React.ReactNode }) => {
 		<RequestsContext.Provider
 			value={{
 				requests,
+				userRequests,
 				addRequest,
+				deleteRequest,
+				loadUserRequests,
 				isCreateModalOpen,
 				openCreateModal: () => setIsCreateModalOpen(true),
 				closeCreateModal: () => setIsCreateModalOpen(false),

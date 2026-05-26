@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { ArrowRightIcon, CalendarIcon, ClockIcon } from 'lucide-react';
+import { ArrowRightIcon, CalendarIcon, ClockIcon, X } from 'lucide-react';
 
 import type { HelpRequest } from '@/types/common';
 
@@ -7,9 +7,10 @@ import { CATEGORIES, statusConfig } from '@/utils/categories';
 
 type RequestRowProps = {
 	request: HelpRequest;
+	onDelete: (_req: HelpRequest) => void;
 };
 
-export const RequestRow = ({ request }: RequestRowProps) => {
+export const RequestRow = ({ request, onDelete }: RequestRowProps) => {
 	const meta = CATEGORIES.filter(x => x.id == request.category)[0];
 	const Icon = meta.icon;
 	const status = statusConfig[request.status];
@@ -22,14 +23,20 @@ export const RequestRow = ({ request }: RequestRowProps) => {
 			<div className='flex-1 min-w-0'>
 				<div className='flex items-start justify-between gap-3'>
 					<p className='text-sm font-medium text-slate-900 leading-snug'>{request.title}</p>
-					<span className={`text-xs font-medium px-2 py-0.5 rounded-full shrink-0 ${status.classes}`}>
-						{status.label}
-					</span>
+					<button
+						onClick={() => onDelete(request)}
+						className='w-8 h-8 flex items-center justify-center rounded-lg text-red-400 hover:text-red-600 hover:bg-red-100 transition-colors cursor-pointer'
+					>
+						<X className='w-4 h-4' />
+					</button>
 				</div>
 				<p className='text-xs text-slate-500 mt-1 line-clamp-1'>{request.description}</p>
 				<div className='flex items-center gap-1.5 mt-2'>
 					<CalendarIcon className='w-3 h-3 text-slate-400' />
 					<span className='text-xs text-slate-400'>{request.date}</span>
+					<span className={`text-xs font-medium px-2 py-0.5 rounded-full shrink-0 ${status.classes}`}>
+						{status.label}
+					</span>
 				</div>
 			</div>
 		</div>
