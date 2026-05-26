@@ -1,18 +1,25 @@
 import { useState, useRef, } from 'react';
 import { Link, useNavigate } from 'react-router';
 import { UserCircleIcon, UploadIcon } from 'lucide-react';
+import axios from 'axios';
+import toast from 'react-hot-toast';
+
 import { useAuth } from '@/context/AuthContext';
-import type { FieldErrors } from '@/types/auth';
 import FormInput from '@/components/Inputs/FormInput';
 
 import axiosInstance from '@/utils/axiosInstance';
 import { API_PATHS } from '@/utils/apiPaths';
-import toast from 'react-hot-toast';
 import uploadImage from '@/utils/uploadImage';
+import { validators } from '@/utils/validators';
 
-const EMAIL_RE = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-const NAME_RE = /^[a-zA-ZÀ-ÿ\s'-]{2,50}$/;
-const PASSWORD_RE = /^(?=.*[A-Za-z])(?=.*\d).{8,}$/;
+
+interface FieldErrors {
+	avatar?: string;
+	fullName?: string;
+	email?: string;
+	password?: string;
+	repeatPassword?: string;
+}
 
 const Register = () => {
 	const navigate = useNavigate();
@@ -31,41 +38,38 @@ const Register = () => {
 
 	const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const file = e.target.files?.[0];
-		if (!file) {return;}
-		if (!file.type.startsWith('image/')) {
-			setErrors((prev) => ({ ...prev, avatar: 'Please upload an image file.' }));
-			return;
-		}
-		if (file.size > 5 * 1024 * 1024) {
-			setErrors((prev) => ({ ...prev, avatar: 'Image must be under 5 MB.' }));
-			return;
-		}
-		setErrors((prev) => ({ ...prev, avatar: undefined }));
+
+		const error = validators.avatar(file);
+		if (error) {return;}
+		setErrors((prev) => ({ ...prev, avatar: error }));
+
 		const reader = new FileReader();
 		reader.onload = () => {
 			const result = reader.result as string;
 			setAvatarPreview(result);
-			setAvatarFile(file);
+			setAvatarFile(file!);
 		};
-		reader.readAsDataURL(file);
+		reader.readAsDataURL(file!);
 	};
 
-	const validate = (): FieldErrors => {
+	const validateRegistration = (): boolean => {
 		const e: FieldErrors = {};
-		if (!NAME_RE.test(fullName.trim())) {e.fullName = 'Enter a valid full name (letters, spaces, hyphens, 2–50 chars).';}
-		if (!EMAIL_RE.test(email.trim())) {e.email = 'Enter a valid email address.';}
-		if (!PASSWORD_RE.test(password)) {e.password = 'Password must be at least 8 characters and include a letter and a number.';}
-		if (password !== repeatPassword) {e.repeatPassword = 'Passwords do not match.';}
-		return e;
+		e.email = validators.email(email);
+		e.password = validators.password(password);
+		e.fullName = validators.full_name(fullName);
+		e.repeatPassword = validators.repeat_password(password, repeatPassword);
+
+		setErrors(e);
+
+		if (!e.email && !e.password && !e.fullName && !e.repeatPassword && !e.avatar) {return true;}
+
+		return false;
 	};
 
 	const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
 		e.preventDefault();
 
-		const fieldErrors = validate();
-		setErrors(fieldErrors);
-		if (Object.keys(fieldErrors).length > 0) {return;}
-
+		if (!validateRegistration()) {return;}
 		setSubmitted(true);
 
 		// api call
@@ -96,22 +100,23 @@ const Register = () => {
 			login(response.data.id, response.data.email, response.data.name, response.data.profileImageUrl);
 			toast.success('Registration successful!');
 			navigate('/dashboard');
-		} catch (error) {
-			console.error(error);
+		} catch (error: unknown) {
+			setSubmitted(false);
+			if (axios.isAxiosError(error)) {
+				const message = error.response?.data?.message || 'Registration failed';
+				toast.error(message);
+				console.error(error.response?.data);
+			} else {
+				toast.error('Unexpected error');
+				console.error(error);
+			}
+		} finally {
+			setSubmitted(false);
 		}
 	};
 
-	const passwordStrength = (() => {
-		if (!password) {return 0;}
-		let score = 0;
 
-		if (password.length >= 8) {score++;}
-		if (/[A-Z]/.test(password)) {score++;}
-		if (/\d/.test(password)) {score++;}
-		if (/[^A-Za-z0-9]/.test(password)) {score++;}
-		return score;
-	})();
-
+	const passwordStrength = validators.passwordStrength(password);
 	const strengthLabel = ['', 'Weak', 'Fair', 'Good', 'Strong'][passwordStrength];
 	const strengthColor = ['', 'bg-red-400', 'bg-amber-400', 'bg-teal-400', 'bg-teal-600'][passwordStrength];
 
@@ -165,6 +170,17 @@ const Register = () => {
 							/>
 						</div>
 
+						{/* Form-level error */}
+						{Object.values(errors).map((value, indx) => {
+							if (value) {
+								return (
+									<div key={indx} className='bg-red-50 border border-red-200 rounded-lg px-4 py-3'>
+										<p className='text-sm text-red-600'>{value}</p>
+									</div>
+								);
+							}
+						})}
+
 						{/* Full name */}
 						<FormInput
 							value={fullName}
@@ -172,7 +188,6 @@ const Register = () => {
 							label={'Full Name'}
 							placeholder='Jane Smith'
 							type='text'
-							errors={errors}
 						/>
 
 						{/* Email */}
@@ -182,7 +197,6 @@ const Register = () => {
 							label={'Email address'}
 							placeholder='jane@example.com'
 							type='text'
-							errors={errors}
 						/>
 
 						{/* Password */}
@@ -192,7 +206,6 @@ const Register = () => {
 							label={'Password'}
 							placeholder='Min. 8 characters'
 							type='password'
-							errors={errors}
 						/>
 
 						{/* Strength bar */}
@@ -220,7 +233,6 @@ const Register = () => {
 							label={'Confirm password'}
 							placeholder='Repeat your password'
 							type='password'
-							errors={errors}
 						/>
 
 

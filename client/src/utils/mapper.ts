@@ -8,10 +8,14 @@ export const mapRequest = (request: HelpRequestApi): HelpRequest => {
 		description: request.description,
 		author: request.author,
 		status: request.status,
-		date: new Date(request.createdAt).toLocaleDateString('en-US', {
-			year: 'numeric',
-			month: 'long',
-			day: 'numeric',
-		}),
+		date: formatFromString(request.updatedAt),
 	};
+};
+
+export const formatFromString = (date: string): string => {
+	return new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+};
+
+export const formatFromDate = (date: Date): string => {
+	return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 };

@@ -1,17 +1,19 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router';
-import { useAuth } from '@/context/AuthContext';
-import FormInput from '@/components/Inputs/FormInput';
-import axiosInstance from '@/utils/axiosInstance';
-import { API_PATHS } from '@/utils/apiPaths';
 import toast from 'react-hot-toast';
 
-const EMAIL_RE = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+import { useAuth } from '@/context/AuthContext';
+
+import FormInput from '@/components/Inputs/FormInput';
+
+import axiosInstance from '@/utils/axiosInstance';
+import { API_PATHS } from '@/utils/apiPaths';
+import { validators } from '@/utils/validators';
 
 interface FieldErrors {
 	email?: string;
 	password?: string;
-	form?: string;
+	authorized?: string;
 }
 
 const Login = () => {
@@ -23,20 +25,20 @@ const Login = () => {
 	const [errors, setErrors] = useState<FieldErrors>({});
 	const [submitted, setSubmitted] = useState(false);
 
-	const validate = (): FieldErrors => {
+	const validateLogin = (): boolean => {
 		const e: FieldErrors = {};
-		if (!EMAIL_RE.test(email.trim())) {e.email = 'Enter a valid email address.';}
-		if (password.length < 1) {e.password = 'Password is required.';}
-		return e;
+		e.email = validators.email(email);
+		e.password = validators.password(password);
+
+		setErrors(e);
+		if (!e.email && !e.password) {return true;}
+		return false;
 	};
 
 	const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
 		e.preventDefault();
 
-		const fieldErrors = validate();
-		setErrors(fieldErrors);
-		if (Object.keys(fieldErrors).length > 0) {return;}
-
+		if (!validateLogin()) {return;}
 		setSubmitted(true);
 
 		// api call
@@ -52,7 +54,12 @@ const Login = () => {
 			toast.success('Login successful!');
 			navigate('/dashboard');
 		} catch (error) {
+			setErrors({ authorized: 'Email or password is wrong' });
+			toast.error('Login failed');
+			setSubmitted(false);
 			console.error(error);
+		} finally {
+			setSubmitted(false);
 		}
 	};
 
@@ -73,11 +80,15 @@ const Login = () => {
 					<form onSubmit={handleSubmit} noValidate className='space-y-5'>
 
 						{/* Form-level error */}
-						{errors.form && (
-							<div className='bg-red-50 border border-red-200 rounded-lg px-4 py-3'>
-								<p className='text-sm text-red-600'>{errors.form}</p>
-							</div>
-						)}
+						{Object.values(errors).map((value, indx) => {
+							if (value) {
+								return (
+									<div key={indx} className='bg-red-50 border border-red-200 rounded-lg px-4 py-3'>
+										<p className='text-sm text-red-600'>{value}</p>
+									</div>
+								);
+							}
+						})}
 
 						{/* Email */}
 						<FormInput
@@ -86,7 +97,6 @@ const Login = () => {
 							label={'Email address'}
 							placeholder='jane@example.com'
 							type='text'
-							errors={errors}
 						/>
 
 						{/* Password */}
@@ -96,14 +106,13 @@ const Login = () => {
 							label={'Password'}
 							placeholder='Your password'
 							type='password'
-							errors={errors}
 						/>
 
 						{/* Submit */}
 						<button
 							type='submit'
 							disabled={submitted}
-							className='w-full py-2.5 bg-teal-600 hover:bg-teal-700 disabled:bg-teal-400 text-white text-sm font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 mt-2'
+							className='cursor-pointer w-full py-2.5 bg-teal-600 hover:bg-teal-700 disabled:bg-teal-400 text-white text-sm font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 mt-2'
 						>
 							{submitted ? 'Signing in…' : 'Sign in'}
 						</button>

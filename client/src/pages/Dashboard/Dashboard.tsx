@@ -5,7 +5,7 @@ import CategoryFilter from '@/components/Layouts/CategoryFilter';
 import HelpRequestCard from '@/components/Cards/HelpRequestCard';
 import RequestInfoModal from '@/components/Modals/RequestInfoModal';
 
-import { categories } from '@/utils/common';
+import { CATEGORIES } from '@/utils/categories';
 import { useRequests } from '@/context/RequestsProvider';
 
 const Dashboard = () => {
@@ -20,7 +20,7 @@ const Dashboard = () => {
 	return (
 		<section className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8'>
 			<CategoryFilter
-				categories={categories}
+				categories={CATEGORIES}
 				activeCategory={activeCategory}
 				onCategoryChange={setActiveCategory}
 			/>
@@ -30,7 +30,7 @@ const Dashboard = () => {
 					<HelpRequestCard
 						key={request.id}
 						request={request}
-						categoryLabel={categories.find(c => c.id === request.category)?.label || 'Other'}
+						categoryLabel={CATEGORIES.find(c => c.id === request.category)?.label || 'Other'}
 						onViewDetails={() => setSelectedRequest(request)}
 					/>
 				))}
@@ -39,7 +39,7 @@ const Dashboard = () => {
 			{selectedRequest && (
 				<RequestInfoModal
 					request={selectedRequest}
-					categoryLabel={categories.find(c => c.id === selectedRequest.category)?.label || 'Other'}
+					categoryLabel={CATEGORIES.find(c => c.id === selectedRequest.category)?.label || 'Other'}
 					isOpen={!!selectedRequest}
 					onClose={() => setSelectedRequest(null)}
 				/>

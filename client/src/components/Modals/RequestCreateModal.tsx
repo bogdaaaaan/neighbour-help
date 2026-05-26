@@ -1,13 +1,16 @@
 import { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
 
+import FormInput from '@/components/Inputs/FormInput';
+
 import { useAuth } from '@/context/AuthContext';
 import { useRequests } from '@/context/RequestsProvider';
-import { categories, formatDate } from '@/utils/common';
-import toast from 'react-hot-toast';
-import type { Author } from '@/types/common';
 
-const DESCRIPTION_MAX = 400;
+import toast from 'react-hot-toast';
+
+import { CATEGORIES } from '@/utils/categories';
+import { formatFromDate } from '@/utils/mapper';
+import { TITLE_MAX, DESCRIPTION_MAX, validators } from '@/utils/validators';
 
 interface FieldErrors {
 	title?: string;
@@ -35,19 +38,22 @@ const RequestCreateModal = () => {
 		return () => { document.body.style.overflow = ''; };
 	}, [isCreateModalOpen]);
 
-	const validate = (): FieldErrors => {
+	const validateCreate = (): boolean => {
 		const e: FieldErrors = {};
-		if (title.trim().length < 5) {e.title = 'Title must be at least 5 characters.';}
-		if (!category) {e.category = 'Please select a category.';}
-		if (description.trim().length < 20) {e.description = 'Description must be at least 20 characters.';}
-		return e;
+		e.title = validators.title(title);
+		e.category = validators.category(category);
+		e.description = validators.description(description);
+
+		setErrors(e);
+
+		if (!e.title && !e.category && !e.description) {return true;}
+		return false;
 	};
 
 	const handleSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
 		e.preventDefault();
-		const fieldErrors = validate();
-		setErrors(fieldErrors);
-		if (Object.keys(fieldErrors).length > 0) {return;}
+
+		if (!validateCreate()) {return;}
 
 		if (!user?.id) {
 			toast.error('User not authenticated');
@@ -57,19 +63,13 @@ const RequestCreateModal = () => {
 		setSubmitted(true);
 
 		try {
-			const _author: Author = {
-				_id: user.id,
-				name: user.fullName,
-				email: user.email
-			};
-
 			addRequest({
-				author: _author,
+				author: { _id: user.id, name: user.fullName, email: user.email },
 				title: title.trim(),
 				category,
 				description: description.trim(),
 				status: 'open',
-				date: formatDate(new Date())
+				date: formatFromDate(new Date())
 			});
 
 			setTitle('');
@@ -78,9 +78,14 @@ const RequestCreateModal = () => {
 			setErrors({});
 
 			setTimeout(() => closeCreateModal(), 700);
+
+			// small fix but not actually a fix
+			window.location.reload();
 		} catch (error) {
 			setSubmitted(false);
 			console.error(error);
+		} finally {
+			setSubmitted(false);
 		}
 	};
 
@@ -113,41 +118,39 @@ const RequestCreateModal = () => {
 				{/* Form */}
 				<form onSubmit={handleSubmit} noValidate className='flex flex-col flex-1 overflow-y-auto'>
 					<div className='px-6 py-5 space-y-5'>
+						{/* Form-level error */}
+						{Object.values(errors).map((value, indx) => {
+							if (value) {
+								return (
+									<div key={indx} className='bg-red-50 border border-red-200 rounded-lg px-4 py-3'>
+										<p className='text-sm text-red-600'>{value}</p>
+									</div>
+								);
+							}
+						})}
 						{/* Title */}
-						<div className='space-y-1.5'>
-							<label htmlFor='req-title' className='text-sm font-medium text-slate-700'>
-								Title
-							</label>
-							<input
-								id='req-title'
-								type='text'
-								value={title}
-								onChange={(e) => setTitle(e.target.value)}
-								placeholder='e.g. Help carrying boxes up to 2nd floor'
-								maxLength={80}
-								className={`w-full px-3.5 py-2.5 rounded-lg border text-sm text-slate-900 placeholder:text-slate-400 bg-white transition-colors focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-0 ${
-									errors.title ? 'border-red-400' : 'border-slate-200 hover:border-slate-300'
-								}`}
-							/>
-							<div className='flex justify-between items-center'>
-								{errors.title
-									? <p className='text-xs text-red-500'>{errors.title}</p>
-									: <span />}
-								<span className='text-xs text-slate-400 ml-auto'>{title.length}/80</span>
-							</div>
+						<FormInput
+							value={title}
+							onChange={(e) => setTitle(e.target.value)}
+							label={'Title'}
+							placeholder='e.g. Help carrying boxes up to 2nd floor'
+							type='text'
+						/>
+						<div className='flex justify-between items-center'>
+							<span className='text-xs text-slate-400 ml-auto'>{title.length}/{TITLE_MAX}</span>
 						</div>
 
 						{/* Category */}
 						<div className='space-y-2'>
 							<label className='text-sm font-medium text-slate-700'>Category</label>
 							<div className='grid grid-cols-3 gap-2'>
-								{categories.map(({ id, label, icon: Icon }) => {
+								{CATEGORIES.map(({ id, label, icon: Icon }) => {
 									const active = category === id;
 									return (
 										<button
 											key={id}
 											type='button'
-											onClick={() => setCategory(id)}
+											onClick={() => setCategory(id as string)}
 											className={`cursor-pointer flex flex-col items-center gap-1.5 py-3 px-2 rounded-xl border text-xs font-medium transition-all focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-0 ${
 												active
 													? 'border-teal-600 bg-teal-50 text-teal-700'
@@ -164,28 +167,19 @@ const RequestCreateModal = () => {
 						</div>
 
 						{/* Description */}
-						<div className='space-y-1.5'>
-							<label htmlFor='req-description' className='text-sm font-medium text-slate-700'>
-								Description
-							</label>
-							<textarea
-								id='req-description'
-								value={description}
-								onChange={(e) => setDescription(e.target.value.slice(0, DESCRIPTION_MAX))}
-								placeholder='Describe what you need help with, when, and any useful details…'
-								rows={4}
-								className={`w-full px-3.5 py-2.5 rounded-lg border text-sm text-slate-900 placeholder:text-slate-400 bg-white resize-none transition-colors focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-0 ${
-									errors.description ? 'border-red-400' : 'border-slate-200 hover:border-slate-300'
-								}`}
-							/>
-							<div className='flex justify-between items-center'>
-								{errors.description
-									? <p className='text-xs text-red-500'>{errors.description}</p>
-									: <span />}
-								<span className={`text-xs ml-auto ${description.length >= DESCRIPTION_MAX ? 'text-amber-500' : 'text-slate-400'}`}>
-									{description.length}/{DESCRIPTION_MAX}
-								</span>
-							</div>
+						<FormInput
+							value={description}
+							onChange={(e) => setDescription(e.target.value.slice(0, DESCRIPTION_MAX))}
+							label={'Description'}
+							placeholder='Describe what you need help with, when, and any useful details…'
+							type='textarea'
+							rows={4}
+							customClass='w-full px-3.5 py-2.5 rounded-lg border text-sm text-slate-900 placeholder:text-slate-400 bg-white resize-none transition-colors focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-0'
+						/>
+						<div className='flex justify-between items-center'>
+							<span className={`text-xs ml-auto ${description.length >= DESCRIPTION_MAX ? 'text-amber-500' : 'text-slate-400'}`}>
+								{description.length}/{DESCRIPTION_MAX}
+							</span>
 						</div>
 					</div>
 

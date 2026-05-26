@@ -1,14 +1,16 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { ClockIcon } from 'lucide-react';
+
 import { useAuth } from '@/context/AuthContext';
 
-import { EmptyState, RequestRow } from './utils';
 import type { HelpRequest } from '@/types/common';
+
+import { EmptyState, RequestRow } from './utils';
+
 import axiosInstance from '@/utils/axiosInstance';
 import { API_PATHS } from '@/utils/apiPaths';
 import { mapRequest } from '@/utils/mapper';
-
 
 const Profile = () => {
 	const { user, isAuthenticated } = useAuth();
@@ -25,7 +27,6 @@ const Profile = () => {
 				}
 
 				const mappedRequests = response.data.map(mapRequest);
-				console.log(mappedRequests);
 
 				setMyRequests(mappedRequests);
 			} catch (error) {

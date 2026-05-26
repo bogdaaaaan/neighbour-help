@@ -1,20 +1,16 @@
-import type { HelpRequest } from '@/types/common';
-import { categoryMeta } from '@/utils/user_data';
-import { ArrowRightIcon, CalendarIcon, ClockIcon } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { ArrowRightIcon, CalendarIcon, ClockIcon } from 'lucide-react';
 
-const statusConfig: Record<string, { label: string; classes: string }> = {
-	'open': { label: 'Open', classes: 'bg-teal-50 text-teal-700' },
-	'in_progress': { label: 'In Progress', classes: 'bg-amber-50 text-amber-700' },
-	'done': { label: 'Done', classes: 'bg-slate-100 text-slate-500' },
-};
+import type { HelpRequest } from '@/types/common';
+
+import { CATEGORIES, statusConfig } from '@/utils/categories';
 
 type RequestRowProps = {
 	request: HelpRequest;
 };
 
 export const RequestRow = ({ request }: RequestRowProps) => {
-	const meta = categoryMeta[request.category] ?? categoryMeta.other;
+	const meta = CATEGORIES.filter(x => x.id == request.category)[0];
 	const Icon = meta.icon;
 	const status = statusConfig[request.status];
 

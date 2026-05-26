@@ -4,9 +4,17 @@ export interface Category {
 	id: string | null;
 	label: string;
 	icon: LucideIcon;
+	color?: string;
 }
 
-interface Author {
+export interface User {
+	id: string;
+	email: string;
+	fullName: string;
+	avatar?: string;
+}
+
+export interface Author {
 	_id: string;
 	name: string;
 	email: string;

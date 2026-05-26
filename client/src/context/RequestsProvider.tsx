@@ -27,8 +27,6 @@ const RequestsProvider = ({ children }: { children: React.ReactNode }) => {
 				author: req.author._id,
 			});
 
-			console.log(req);
-
 			const newRequest = response.data;
 			setRequests((prev) => [newRequest, ...prev]);
 			toast.success('Request posted successfully!');

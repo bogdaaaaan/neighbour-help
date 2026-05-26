@@ -31,8 +31,8 @@ axiosInstance.interceptors.response.use(
 	},
 	(error) => {
 		if (error.response) {
-			if (error.response.status === 401 && window.location.pathname !== '/') {
-				window.location.href = '/';
+			if (error.response.status === 401) {
+				console.error('Unauthorized.');
 			} else if (error.response.status === 500) {
 				console.error('Server error, please try again later.');
 			}
