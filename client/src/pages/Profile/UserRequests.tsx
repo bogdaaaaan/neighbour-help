@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { ArrowRightIcon, CalendarIcon, ClockIcon, X } from 'lucide-react';
+import { ArrowRightIcon, CalendarIcon, ClockIcon } from 'lucide-react';
 
 import type { HelpRequest } from '@/types/common';
 
@@ -7,10 +7,12 @@ import { CATEGORIES, statusConfig } from '@/utils/categories';
 
 type RequestRowProps = {
 	request: HelpRequest;
-	onDelete: (_req: HelpRequest) => void;
+	personal: boolean;
+	onDelete?: (_req: HelpRequest) => void;
+	onComplete?: (_req: HelpRequest) => void;
 };
 
-export const RequestRow = ({ request, onDelete }: RequestRowProps) => {
+export const RequestRow = ({ request, personal, onDelete, onComplete }: RequestRowProps) => {
 	const meta = CATEGORIES.filter(x => x.id == request.category)[0];
 	const Icon = meta.icon;
 	const status = statusConfig[request.status];
@@ -23,12 +25,6 @@ export const RequestRow = ({ request, onDelete }: RequestRowProps) => {
 			<div className='flex-1 min-w-0'>
 				<div className='flex items-start justify-between gap-3'>
 					<p className='text-sm font-medium text-slate-900 leading-snug'>{request.title}</p>
-					<button
-						onClick={() => onDelete(request)}
-						className='w-8 h-8 flex items-center justify-center rounded-lg text-red-400 hover:text-red-600 hover:bg-red-100 transition-colors cursor-pointer'
-					>
-						<X className='w-4 h-4' />
-					</button>
 				</div>
 				<p className='text-xs text-slate-500 mt-1 line-clamp-1'>{request.description}</p>
 				<div className='flex items-center gap-1.5 mt-2'>
@@ -37,6 +33,25 @@ export const RequestRow = ({ request, onDelete }: RequestRowProps) => {
 					<span className={`text-xs font-medium px-2 py-0.5 rounded-full shrink-0 ${status.classes}`}>
 						{status.label}
 					</span>
+				</div>
+				<div className='flex items-center gap-1.5 mt-4'>
+					{personal && onComplete && request.status === 'in-progress' && (
+						<button
+							onClick={() => onComplete(request)}
+							className='flex-1 flex items-center justify-center gap-2 py-2 px-4 rounded-lg text-sm bg-teal-100 text-teal-400 hover:text-teal-600 hover:bg-teal-200 transition-colors cursor-pointer'
+						>
+							Mark as completed
+						</button>
+					)}
+
+					{personal && onDelete && (
+						<button
+							onClick={() => onDelete(request)}
+							className='flex-1 flex items-center justify-center gap-2 py-2 px-4 rounded-lg text-sm bg-red-100 text-red-400 hover:text-red-600 hover:bg-red-200 transition-colors cursor-pointer'
+						>
+							Delete
+						</button>
+					)}
 				</div>
 			</div>
 		</div>
