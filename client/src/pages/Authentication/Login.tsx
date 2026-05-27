@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router';
 import toast from 'react-hot-toast';
 
-import { useAuth } from '@/context/AuthContext';
+import { useAuth } from '@/context/AuthProvider';
 
 import FormInput from '@/components/Inputs/FormInput';
 
@@ -41,7 +41,6 @@ const Login = () => {
 		if (!validateLogin()) {return;}
 		setSubmitted(true);
 
-		// api call
 		try {
 			const response = await axiosInstance.post(API_PATHS.AUTH.LOGIN, { email, password });
 
@@ -49,10 +48,12 @@ const Login = () => {
 			localStorage.setItem('userId', response.data.id);
 			localStorage.setItem('userName', response.data.name);
 
+			// console.log(response.data);
+
 			login(response.data.id, response.data.email, response.data.name, response.data.profileImageUrl);
 
 			toast.success('Login successful!');
-			navigate('/dashboard');
+			navigate('/profile');
 		} catch (error) {
 			setErrors({ authorized: 'Email or password is wrong' });
 			toast.error('Login failed');

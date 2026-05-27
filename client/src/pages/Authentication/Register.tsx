@@ -4,7 +4,7 @@ import { UserCircleIcon, UploadIcon } from 'lucide-react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 
-import { useAuth } from '@/context/AuthContext';
+import { useAuth } from '@/context/AuthProvider';
 import FormInput from '@/components/Inputs/FormInput';
 
 import axiosInstance from '@/utils/axiosInstance';

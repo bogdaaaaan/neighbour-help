@@ -1,7 +1,7 @@
 import { Link, useNavigate } from 'react-router';
 import { HeartHandshakeIcon, UsersIcon, MapPinIcon, ShieldCheckIcon } from 'lucide-react';
 
-import { useAuth } from '@/context/AuthContext';
+import { useAuth } from '@/context/AuthProvider';
 import { useRequests } from '@/context/RequestsProvider';
 
 const Home = () => {

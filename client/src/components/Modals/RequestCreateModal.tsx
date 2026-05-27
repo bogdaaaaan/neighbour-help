@@ -3,7 +3,7 @@ import { X } from 'lucide-react';
 
 import FormInput from '@/components/Inputs/FormInput';
 
-import { useAuth } from '@/context/AuthContext';
+import { useAuth } from '@/context/AuthProvider';
 import { useRequests } from '@/context/RequestsProvider';
 
 import toast from 'react-hot-toast';
@@ -50,6 +50,13 @@ const RequestCreateModal = () => {
 		return false;
 	};
 
+	const resetModal = () => {
+		setTitle('');
+		setCategory('');
+		setDescription('');
+		setErrors({});
+	};
+
 	const handleSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
 		e.preventDefault();
 
@@ -64,23 +71,20 @@ const RequestCreateModal = () => {
 
 		try {
 			addRequest({
-				author: { _id: user.id, name: user.fullName, email: user.email },
+				author: user,
 				title: title.trim(),
 				category,
 				description: description.trim(),
 				status: 'open',
+				helper: null,
 				date: formatFromDate(new Date())
 			});
 
-			setTitle('');
-			setCategory('');
-			setDescription('');
-			setErrors({});
-
-			setTimeout(() => closeCreateModal(), 700);
+			resetModal();
+			closeCreateModal();
 
 			// small fix but not actually a fix
-			window.location.reload();
+			// window.location.reload();
 		} catch (error) {
 			setSubmitted(false);
 			console.error(error);
