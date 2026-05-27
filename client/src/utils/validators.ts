@@ -45,8 +45,8 @@ export const validators = {
 	},
 
 	title(title_string: string): string | undefined {
-		if (title_string.trim().length < 5) {return `Title must be at least ${TITLE_MIN} characters.`;}
-		if (title_string.trim().length > 80) {return `Title must be less than ${TITLE_MAX} characters.`;}
+		if (title_string.trim().length < TITLE_MIN) {return `Title must be at least ${TITLE_MIN} characters.`;}
+		if (title_string.trim().length > TITLE_MAX) {return `Title must be less than ${TITLE_MAX} characters.`;}
 		return undefined;
 	},
 
@@ -55,8 +55,8 @@ export const validators = {
 	},
 
 	description(description_string: string): string | undefined {
-		if (description_string.trim().length < 20) {return `Description must be at least ${DESCRIPTION_MIN} characters.`;}
-		if (description_string.trim().length > 80) {return `Description must be less than ${DESCRIPTION_MAX} characters.`;}
+		if (description_string.trim().length < DESCRIPTION_MIN) {return `Description must be at least ${DESCRIPTION_MIN} characters.`;}
+		if (description_string.trim().length > DESCRIPTION_MAX) {return `Description must be less than ${DESCRIPTION_MAX} characters.`;}
 		return undefined;
 	}
 };

@@ -7,17 +7,18 @@ export interface Category {
 	color?: string;
 }
 
+export interface UserApi {
+	_id: string;
+	email: string;
+	name: string;
+	profileImageUrl?: string;
+}
+
 export interface User {
 	id: string;
 	email: string;
-	fullName: string;
-	avatar?: string;
-}
-
-export interface Author {
-	_id: string;
 	name: string;
-	email: string;
+	profileImageUrl?: string;
 }
 
 export interface HelpRequestApi {
@@ -25,8 +26,9 @@ export interface HelpRequestApi {
 	title: string;
 	category: string;
 	description: string;
-	author: Author;
+	author: UserApi;
 	status: string;
+	helper: UserApi | null;
 	createdAt: string;
 	updatedAt: string;
 }
@@ -36,7 +38,8 @@ export interface HelpRequest {
 	title: string;
 	category: string;
 	description: string;
-	author: Author;
+	author: User;
 	status: string;
+	helper: User | null;
 	date: string;
 }

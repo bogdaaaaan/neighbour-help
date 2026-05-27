@@ -14,5 +14,5 @@ export const CATEGORIES: Category[] = [
 export const statusConfig: Record<string, { label: string; classes: string }> = {
 	'open': { label: 'Open', classes: 'bg-teal-50 text-teal-700' },
 	'in-progress': { label: 'In Progress', classes: 'bg-amber-50 text-amber-700' },
-	'done': { label: 'Done', classes: 'bg-slate-100 text-slate-500' },
+	'completed': { label: 'Completed', classes: 'bg-slate-100 text-slate-500' },
 };

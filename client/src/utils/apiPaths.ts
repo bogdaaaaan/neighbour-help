@@ -28,6 +28,12 @@ export const API_PATHS = {
 		CREATE_REQUEST: '/api/requests/create',
 
 		// Delete request by id
-		DELETE_REQUEST: (id: string) => `api/requests/${id}`
+		DELETE_REQUEST: (id: string) => `api/requests/${id}`,
+
+		// Accept request by id
+		ACCEPT_REQUEST: (id: string) => `api/requests/${id}/accept`,
+
+		// Complete request by id
+		COMPLETE_REQUEST: (id: string) => `api/requests/${id}/complete`
 	},
 };
