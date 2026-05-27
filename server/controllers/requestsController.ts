@@ -8,6 +8,7 @@ const getAllRequests = async (req: Request, res: Response): Promise<void> => {
 	try {
 		const requests = await RequestModel.find()
 			.populate('author', 'name email profileImageUrl')
+			.populate('helper', 'name email profileImageUrl')
 			.sort({ createdAt: -1 });
 
 		res.json(requests);
@@ -121,6 +122,11 @@ const completeRequest = async (req: Request, res: Response): Promise<void> => {
 			return;
 		}
 
+		if (request.helper == null) {
+			res.status(403).json({ message: 'Not authorized to complete this request' });
+			return;
+		}
+
 		const isAuthor = request.author.toString() === req.user._id.toString();
 		const isHelper = request.helper?.toString() === req.user._id.toString();
 
@@ -151,10 +157,9 @@ const getRequestById = async (req: Request, res: Response): Promise<void> => {
 	try {
 		const { id } = req.params;
 
-		const request = await RequestModel.findById(id).populate(
-			'author',
-			'name email profileImageUrl'
-		);
+		const request = await RequestModel.findById(id)
+			.populate('author', 'name email profileImageUrl')
+			.populate('helper', 'name email profileImageUrl');
 
 		if (!request) {
 			res.status(404).json({ message: 'Request not found' });
@@ -177,6 +182,7 @@ const getUserRequests = async (req: Request, res: Response): Promise<void> => {
 
 		const requests = await RequestModel.find({ author: userId })
 			.populate('author', 'name email profileImageUrl')
+			.populate('helper', 'name email profileImageUrl')
 			.sort({ createdAt: -1 });
 
 		res.json(requests);
@@ -204,22 +210,17 @@ const createRequest = async (req: Request, res: Response): Promise<void> => {
 		}
 
 		const newRequest = await RequestModel.create({
-			title,
-			category,
-			description,
+			title: title,
+			category: category,
+			description: description,
 			status: status || 'open',
 			author: req.user._id
 		});
 
-		res.status(201).json({
-			id: newRequest._id,
-			title: newRequest.title,
-			category: newRequest.category,
-			description: newRequest.description,
-			author: newRequest.author,
-			status: newRequest.status,
-			createdAt: newRequest.createdAt,
-		});
+		const populatedRequest = await newRequest
+			.populate('author', 'name email profileImageUrl');
+
+		res.status(201).json(populatedRequest);
 
 	} catch (error) {
 		console.error('Error creating request: ', error);
@@ -313,6 +314,7 @@ const getMyRequests = async (req: Request, res: Response): Promise<void> => {
 
 		const requests = await RequestModel.find({ author: req.user._id })
 			.populate('author', 'name email profileImageUrl')
+			.populate('helper', 'name email profileImageUrl')
 			.sort({ createdAt: -1 });
 
 		res.json(requests);
