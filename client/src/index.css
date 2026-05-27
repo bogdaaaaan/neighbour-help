@@ -2,7 +2,7 @@
 @import 'tailwindcss';
 
 html {
-	scrollbar-gutter: stable;
+	scrollbar-width: none;
 }
 
 body {

@@ -5,7 +5,7 @@ import { router } from './routes';
 const App = () => {
 	return (
 		<>
-			<RouterProvider router={router} />;
+			<RouterProvider router={router} />
 			<Toaster toastOptions={{ className: '', style: { fontSize: '13px' } }} />
 		</>
 	);
