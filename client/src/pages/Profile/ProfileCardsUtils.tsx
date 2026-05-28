@@ -17,9 +17,6 @@ export const RequestRow = ({ request, activeTab, onDelete, onComplete }: Request
 	const Icon = meta.icon;
 	const status = statusConfig[request.status];
 
-	if (!request.author) {return;}
-	if (!request.helper) {return;}
-
 	return (
 		<div className='flex items-start gap-4 p-4 rounded-xl border border-slate-100 bg-white hover:border-slate-200 hover:shadow-sm transition-all'>
 			<div className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 ${meta.color}`}>
@@ -37,8 +34,9 @@ export const RequestRow = ({ request, activeTab, onDelete, onComplete }: Request
 						{status.label}
 					</span>
 				</div>
-
-				<ContactInfo activeTab={activeTab} request={request}/>
+				{request.helper && (
+					<ContactInfo activeTab={activeTab} request={request}/>
+				)}
 
 				<div className='flex items-center gap-1.5 mt-4'>
 					{activeTab == 'created' && onComplete && request.status === 'in-progress' && (
