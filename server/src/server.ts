@@ -1,5 +1,4 @@
 import './configs/env.js';
-import path from 'path';
 
 import express from 'express';
 import cors from 'cors';
@@ -33,9 +32,6 @@ app.use(express.json());
 
 app.use('/api/auth', authRoutes);
 app.use('/api/requests/', requestsRoutes);
-
-// Serve uploads folder
-app.use('/uploads', express.static(path.resolve('uploads')));
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server is running on port ${PORT}`));

@@ -1,22 +1,9 @@
 import multer from 'multer';
-import path from 'path';
-import fs from 'fs';
+import streamifier from 'streamifier';
 
-const uploadDir = path.join(process.cwd(), 'uploads');
+import cloudinary from '../configs/cloudinary.js';
 
-if (!fs.existsSync(uploadDir)) {
-	fs.mkdirSync(uploadDir, { recursive: true });
-}
-
-const storage = multer.diskStorage({
-	destination: (req, file, cb) => {
-		cb(null, uploadDir);
-	},
-	filename: (req, file, cb) => {
-		const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-		cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
-	},
-});
+const storage = multer.memoryStorage();
 
 const fileFilter = (req: any, file: any, cb: any) => {
 	if (file.mimetype.startsWith('image/')) {
@@ -27,11 +14,31 @@ const fileFilter = (req: any, file: any, cb: any) => {
 };
 
 const upload = multer({
-	storage: storage,
-	fileFilter: fileFilter,
+	storage,
+	fileFilter,
 	limits: {
 		fileSize: 5 * 1024 * 1024,
 	},
 });
 
-export default upload;
+const uploadToCloudinary = async (buffer: Buffer): Promise<string> => {
+	return new Promise((resolve, reject) => {
+		const stream = cloudinary.uploader.upload_stream(
+			{
+				folder: 'avatars',
+			},
+			(error, result) => {
+				if (error || !result) {
+					reject(error);
+					return;
+				}
+
+				resolve(result.secure_url);
+			}
+		);
+
+		streamifier.createReadStream(buffer).pipe(stream);
+	});
+};
+
+export { upload, uploadToCloudinary };
