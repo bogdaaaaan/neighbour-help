@@ -8,6 +8,9 @@ export const TITLE_MAX = 80;
 const DESCRIPTION_MIN = 20;
 export const DESCRIPTION_MAX = 400;
 
+const LOCATION_MIN = 10;
+export const LOCATION_MAX = 80;
+
 export const validators = {
 	email(email_string: string): string | undefined {
 		return !EMAIL_RE.test(email_string.trim()) ? 'Enter a valid email address.' : undefined;
@@ -48,6 +51,11 @@ export const validators = {
 		if (title_string.trim().length < TITLE_MIN) {return `Title must be at least ${TITLE_MIN} characters.`;}
 		if (title_string.trim().length > TITLE_MAX) {return `Title must be less than ${TITLE_MAX} characters.`;}
 		return undefined;
+	},
+
+	location(location_string: string): string | undefined {
+		if (location_string.trim().length < LOCATION_MIN) {return `Location must be at least ${LOCATION_MIN} characters.`;}
+		if (location_string.trim().length > LOCATION_MAX) {return `Location must be less than ${LOCATION_MAX} characters.`;}
 	},
 
 	category(category_string: string): string | undefined {

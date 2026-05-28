@@ -21,6 +21,7 @@ export const mapRequest = (request: HelpRequestApi): HelpRequest => {
 		},
 		status: request.status,
 		helper: new_helper,
+		location: request.location,
 		date: formatFromString(request.updatedAt),
 	};
 };

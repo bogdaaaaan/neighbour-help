@@ -29,6 +29,7 @@ export interface HelpRequestApi {
 	author: UserApi;
 	status: string;
 	helper: UserApi | null;
+	location: string;
 	createdAt: string;
 	updatedAt: string;
 }
@@ -41,5 +42,6 @@ export interface HelpRequest {
 	author: User;
 	status: string;
 	helper: User | null;
+	location: string;
 	date: string;
 }

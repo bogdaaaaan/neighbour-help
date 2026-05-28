@@ -59,7 +59,7 @@ const RequestInfoModal = ({ request, categoryLabel, isOpen, onClose }: RequestMo
 						</div>
 						<div className='flex items-center gap-2 text-slate-600'>
 							<MapPinIcon className='w-4 h-4' />
-							<span>Local neighborhood</span>
+							<span>{request.location}</span>
 						</div>
 					</div>
 

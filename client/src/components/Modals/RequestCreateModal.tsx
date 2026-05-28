@@ -10,11 +10,12 @@ import toast from 'react-hot-toast';
 
 import { CATEGORIES } from '@/utils/categories';
 import { formatFromDate } from '@/utils/mapper';
-import { TITLE_MAX, DESCRIPTION_MAX, validators } from '@/utils/validators';
+import { TITLE_MAX, DESCRIPTION_MAX, validators, LOCATION_MAX } from '@/utils/validators';
 
 interface FieldErrors {
 	title?: string;
 	category?: string;
+	location?: string;
 	description?: string;
 }
 
@@ -25,6 +26,7 @@ const RequestCreateModal = () => {
 	const [title, setTitle] = useState('');
 	const [category, setCategory] = useState('');
 	const [description, setDescription] = useState('');
+	const [location, setLocation] = useState('');
 	const [errors, setErrors] = useState<FieldErrors>({});
 	const [submitted, setSubmitted] = useState(false);
 
@@ -42,16 +44,18 @@ const RequestCreateModal = () => {
 		const e: FieldErrors = {};
 		e.title = validators.title(title);
 		e.category = validators.category(category);
+		e.location = validators.location(location);
 		e.description = validators.description(description);
 
 		setErrors(e);
 
-		if (!e.title && !e.category && !e.description) {return true;}
+		if (!e.title && !e.category && !e.description && !e.location) {return true;}
 		return false;
 	};
 
 	const resetModal = () => {
 		setTitle('');
+		setLocation('');
 		setCategory('');
 		setDescription('');
 		setErrors({});
@@ -77,14 +81,12 @@ const RequestCreateModal = () => {
 				description: description.trim(),
 				status: 'open',
 				helper: null,
+				location: location,
 				date: formatFromDate(new Date())
 			});
 
 			resetModal();
 			closeCreateModal();
-
-			// small fix but not actually a fix
-			// window.location.reload();
 		} catch (error) {
 			setSubmitted(false);
 			console.error(error);
@@ -142,6 +144,18 @@ const RequestCreateModal = () => {
 						/>
 						<div className='flex justify-between items-center'>
 							<span className='text-xs text-slate-400 ml-auto'>{title.length}/{TITLE_MAX}</span>
+						</div>
+
+						{/* Location */}
+						<FormInput
+							value={location}
+							onChange={(e) => setLocation(e.target.value)}
+							label={'Location'}
+							placeholder='e.g. Main Street 123, 12345, NY'
+							type='text'
+						/>
+						<div className='flex justify-between items-center'>
+							<span className='text-xs text-slate-400 ml-auto'>{location.length}/{LOCATION_MAX}</span>
 						</div>
 
 						{/* Category */}
