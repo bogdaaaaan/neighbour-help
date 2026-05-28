@@ -7,15 +7,18 @@ import { CATEGORIES, statusConfig } from '@/utils/categories';
 
 type RequestRowProps = {
 	request: HelpRequest;
-	personal: boolean;
+	activeTab: string;
 	onDelete?: (_req: HelpRequest) => void;
 	onComplete?: (_req: HelpRequest) => void;
 };
 
-export const RequestRow = ({ request, personal, onDelete, onComplete }: RequestRowProps) => {
+export const RequestRow = ({ request, activeTab, onDelete, onComplete }: RequestRowProps) => {
 	const meta = CATEGORIES.filter(x => x.id == request.category)[0];
 	const Icon = meta.icon;
 	const status = statusConfig[request.status];
+
+	if (!request.author) {return;}
+	if (!request.helper) {return;}
 
 	return (
 		<div className='flex items-start gap-4 p-4 rounded-xl border border-slate-100 bg-white hover:border-slate-200 hover:shadow-sm transition-all'>
@@ -34,8 +37,11 @@ export const RequestRow = ({ request, personal, onDelete, onComplete }: RequestR
 						{status.label}
 					</span>
 				</div>
+
+				<ContactInfo activeTab={activeTab} request={request}/>
+
 				<div className='flex items-center gap-1.5 mt-4'>
-					{personal && onComplete && request.status === 'in-progress' && (
+					{activeTab == 'created' && onComplete && request.status === 'in-progress' && (
 						<button
 							onClick={() => onComplete(request)}
 							className='flex-1 flex items-center justify-center gap-2 py-2 px-4 rounded-lg text-sm bg-teal-100 text-teal-400 hover:text-teal-600 hover:bg-teal-200 transition-colors cursor-pointer'
@@ -44,7 +50,7 @@ export const RequestRow = ({ request, personal, onDelete, onComplete }: RequestR
 						</button>
 					)}
 
-					{personal && onDelete && (
+					{activeTab == 'created' && onDelete && (
 						<button
 							onClick={() => onDelete(request)}
 							className='flex-1 flex items-center justify-center gap-2 py-2 px-4 rounded-lg text-sm bg-red-100 text-red-400 hover:text-red-600 hover:bg-red-200 transition-colors cursor-pointer'
@@ -72,6 +78,26 @@ export const EmptyState = ({ message, actionLabel, actionTo }: { message: string
 				{actionLabel}
 				<ArrowRightIcon className='w-3.5 h-3.5' />
 			</Link>
+		</div>
+	);
+};
+
+const ContactInfo = ({ activeTab, request }: {activeTab: string; request: HelpRequest}) => {
+	const person = activeTab == 'created' ? request.helper : request.author;
+	const title = activeTab == 'created' ? 'Helper' : 'Author';
+	return (
+		<div className='text-xs text-slate-400 mt-3'>
+			<span className='text-slate-600'>{title} contact Information: </span>
+			<div className='flex flex-col gap-1.5 mt-2'>
+				<span className=''>
+					Name: <span className='text-slate-600'>{person?.name}</span>
+				</span>
+				{activeTab !== 'completed' && (
+					<span className=''>
+					Email: <span className='text-slate-600'>{person?.email}</span>
+					</span>
+				)}
+			</div>
 		</div>
 	);
 };

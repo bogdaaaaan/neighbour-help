@@ -2,27 +2,23 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { ClockIcon } from 'lucide-react';
 
+import ProfileTabs from './ProfileTabs';
+import ProfileCards from './ProfileCards';
+
 import { useAuth } from '@/context/AuthProvider';
-
-import { EmptyState, RequestRow } from './UserRequests';
-
 import { useRequests } from '@/context/RequestsProvider';
+
 
 const Profile = () => {
 	const { user, isAuthenticated } = useAuth();
-	const {
-		userCreatedRequests,
-		userActiveRequests,
-		userAcceptedRequests,
-		userCompletedRequests,
-		deleteRequest,
-		completeRequest
-	} = useRequests();
-
+	const { userCreatedRequests } = useRequests();
 	const [activeTab, setActiveTab] = useState<'created' | 'active' | 'completed'>('created');
-	const [showCompleted, setShowCompleted] = useState(false);
 
 	const navigate = useNavigate();
+
+	const openRequests = userCreatedRequests.filter(r => r.status === 'open');
+	const inProgressRequests = userCreatedRequests.filter(r => r.status === 'in-progress');
+	const completedRequests = userCreatedRequests.filter(r => r.status === 'completed');
 
 	if (!isAuthenticated) {
 		return (
@@ -51,10 +47,6 @@ const Profile = () => {
 			</main>
 		);
 	}
-
-	const openRequests = userCreatedRequests.filter(r => r.status === 'open');
-	const inProgressRequests = userCreatedRequests.filter(r => r.status === 'in-progress');
-	const completedRequests = userCreatedRequests.filter(r => r.status === 'completed');
 
 	const initials = user!.name
 		.split(' ')
@@ -105,122 +97,9 @@ const Profile = () => {
 				</div>
 			</div>
 
-			{/* Tabs */}
-			<div className='flex gap-1 bg-slate-100 p-1 rounded-xl mb-5'>
-				<button
-					onClick={() => setActiveTab('created')}
-					className={`flex-1 flex items-center justify-center gap-2 py-2 px-4 rounded-lg text-sm font-medium transition-colors cursor-pointer ${
-						activeTab === 'created'
-							? 'bg-white text-slate-900 shadow-sm'
-							: 'text-slate-500 hover:text-slate-700'
-					}`}
-				>
-					My Requests
-					<span className={`text-xs px-1.5 py-0.5 rounded-full font-medium ${
-						activeTab === 'created' ? 'bg-teal-50 text-teal-700' : 'bg-slate-200 text-slate-500'
-					}`}>
-						{userActiveRequests.length}
-					</span>
-				</button>
-				<button
-					onClick={() => setActiveTab('active')}
-					className={`flex-1 flex items-center justify-center gap-2 py-2 px-4 rounded-lg text-sm font-medium transition-colors cursor-pointer ${
-						activeTab === 'active'
-							? 'bg-white text-slate-900 shadow-sm'
-							: 'text-slate-500 hover:text-slate-700'
-					}`}
-				>
-						Currently Doing
-					<span className={`text-xs px-1.5 py-0.5 rounded-full font-medium ${
-						activeTab === 'active' ? 'bg-teal-50 text-teal-700' : 'bg-slate-200 text-slate-500'
-					}`}>
-						{userAcceptedRequests.length}
-					</span>
-				</button>
-				<button
-					onClick={() => setActiveTab('completed')}
-					className={`flex-1 flex items-center justify-center gap-2 py-2 px-4 rounded-lg text-sm font-medium transition-colors cursor-pointer ${
-						activeTab === 'completed'
-							? 'bg-white text-slate-900 shadow-sm'
-							: 'text-slate-500 hover:text-slate-700'
-					}`}
-				>
-					Completed
-					<span className={`text-xs px-1.5 py-0.5 rounded-full font-medium ${
-						activeTab === 'completed' ? 'bg-teal-50 text-teal-700' : 'bg-slate-200 text-slate-500'
-					}`}>
-						{userCompletedRequests.length}
-					</span>
-				</button>
-			</div>
 			{/* Tab content */}
-			{activeTab === 'created' && (
-				<div className='flex flex-col'>
-					<div className='space-y-3'>
-						{userActiveRequests.length === 0 ? (
-							<EmptyState
-								message="You haven't posted any requests yet."
-								actionLabel='Post your first request'
-								actionTo='/dashboard'
-							/>
-						) : (
-							userActiveRequests.map((r) => <RequestRow key={r.id} request={r} personal={true} onDelete={deleteRequest} onComplete={completeRequest} />)
-						)}
-					</div>
-					{completedRequests.length > 0 && (
-						<div className='flex  items-center justify-center mt-4 mb-4'>
-							<button
-								className='w-1/3 items-center justify-center gap-2 py-2 px-4 rounded-lg text-sm font-medium transition-colors cursor-pointer bg-slate-100 text-slate-500 hover:text-slate-700'
-								onClick={() => setShowCompleted(!showCompleted)}
-							>
-								{showCompleted ? 'Hide completed requests' : 'Show completed requests'}
-							</button>
-						</div>
-					)}
-					{showCompleted && (
-						<div className='space-y-3'>
-							{completedRequests.length === 0 ? (
-								<EmptyState
-									message="You haven't posted any requests yet."
-									actionLabel='Post your first request'
-									actionTo='/dashboard'
-								/>
-							) : (
-								completedRequests.map((r) => <RequestRow key={r.id} request={r} personal={false}/>)
-							)}
-						</div>
-					)}
-
-				</div>
-			)}
-
-			{activeTab === 'active' && (
-				<div className='space-y-3'>
-					{userAcceptedRequests.length === 0 ? (
-						<EmptyState
-							message="You haven't started doing any requests yet."
-							actionLabel='Browse requests'
-							actionTo='/dashboard'
-						/>
-					) : (
-						userAcceptedRequests.map((r) => <RequestRow key={r.id} request={r} personal={false}/>)
-					)}
-				</div>
-			)}
-
-			{activeTab === 'completed' && (
-				<div className='space-y-3'>
-					{userCompletedRequests.length === 0 ? (
-						<EmptyState
-							message="You haven't helped with any requests yet."
-							actionLabel='Browse requests'
-							actionTo='/dashboard'
-						/>
-					) : (
-						userCompletedRequests.map((r) => <RequestRow key={r.id} request={r} personal={false}/>)
-					)}
-				</div>
-			)}
+			<ProfileTabs activeTab={activeTab} setActiveTab={setActiveTab}/>
+			<ProfileCards activeTab={activeTab} />
 		</main>
 	);
 };
