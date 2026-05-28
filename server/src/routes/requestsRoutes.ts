@@ -7,9 +7,9 @@ import {
 	getUserRequests,
 	acceptRequest,
 	completeRequest
-} from '@/controllers/requestsController';
+} from '../controllers/requestsController.js';
 
-import { protect } from '@/middleware/authMiddleware';
+import { protect } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 

@@ -3,15 +3,15 @@
 	"version": "1.0.0",
 	"description": "",
 	"license": "ISC",
-	"author": "",
 	"type": "module",
-	"main": "index.js",
+	"author": "",
+	"main": "server.js",
 	"scripts": {
 		"build": "tsc",
-		"start": "node dist/index.js",
+		"start": "node dist/server.js",
 		"lint": "eslint .",
 		"lint:fix": "eslint . --fix",
-		"dev": "tsx watch ./server.ts"
+		"dev": "tsx watch ./src/server.ts"
 	},
 	"devDependencies": {
 		"@eslint/js": "^10.0.1",

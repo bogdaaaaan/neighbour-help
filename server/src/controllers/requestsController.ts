@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import RequestModel from '@/models/Request';
+import RequestModel from '../models/Request.js';
 
 // @desc    Get all help requests
 // @route   GET /api/requests

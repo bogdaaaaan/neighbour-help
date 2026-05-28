@@ -1,23 +1,21 @@
-import '@/configs/env';
+import './configs/env.js';
 import path from 'path';
-import { fileURLToPath } from 'url';
 
 import express from 'express';
 import cors from 'cors';
 
-import connectDB from '@/configs/db';
+import connectDB from './configs/db.js';
 
-import authRoutes from '@/routes/authRoutes';
-import requestsRoutes from '@/routes/requestsRoutes';
+import authRoutes from './routes/authRoutes.js';
+import requestsRoutes from './routes/requestsRoutes.js';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 const app = express();
 
 app.use(
 	cors({
-		origin: '*',
+		origin: process.env.CLIENT_URL,
+  		credentials: true,
 		methods: ['GET', 'POST', 'PUT', 'DELETE'],
 		allowedHeaders: ['Content-Type', 'Authorization']
 	})
@@ -31,7 +29,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/requests/', requestsRoutes);
 
 // Serve uploads folder
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use('/uploads', express.static(path.resolve('uploads')));
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server is running on port ${PORT}`));

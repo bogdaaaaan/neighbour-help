@@ -1,8 +1,8 @@
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 
-import User from '@/models/User';
-import { UserDocument } from '@/models/User';
+import User from '../models/User.js';
+import { UserDocument } from '../models/User.js';
 
 import { Types } from 'mongoose';
 
