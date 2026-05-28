@@ -1,7 +1,6 @@
 import { useState, useRef, } from 'react';
 import { Link, useNavigate } from 'react-router';
 import { UserCircleIcon, UploadIcon } from 'lucide-react';
-import axios from 'axios';
 import toast from 'react-hot-toast';
 
 import { useAuth } from '@/context/AuthProvider';
@@ -100,16 +99,10 @@ const Register = () => {
 			login(response.data.id, response.data.email, response.data.name, response.data.profileImageUrl);
 			toast.success('Registration successful!');
 			navigate('/dashboard');
-		} catch (error: unknown) {
+		} catch (error) {
 			setSubmitted(false);
-			if (axios.isAxiosError(error)) {
-				const message = error.response?.data?.message || 'Registration failed';
-				toast.error(message);
-				console.error(error.response?.data);
-			} else {
-				toast.error('Unexpected error');
-				console.error(error);
-			}
+			toast.error('Unexpected error');
+			console.error(error);
 		} finally {
 			setSubmitted(false);
 		}
