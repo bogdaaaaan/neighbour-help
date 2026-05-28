@@ -81,7 +81,14 @@ const Navbar = () => {
 									>
 										<div className='w-8 h-8 rounded-full bg-teal-100 flex items-center justify-center overflow-hidden'>
 											{user?.profileImageUrl ? (
-												<img src={user.profileImageUrl} alt={user.name} className='w-full h-full object-cover' />
+												<img
+													src={user.profileImageUrl}
+													onError={(e) => {
+														e.currentTarget.src = '/default.jpg';
+													}}
+													className='w-full h-full object-cover'
+													alt={user.name}
+												/>
 											) : user ? (
 												<span className='text-xs font-semibold text-teal-700'>
 													{user.name.split(' ').map((n) => n[0]).join('').slice(0, 2).toUpperCase()}
