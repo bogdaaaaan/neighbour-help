@@ -1,9 +1,11 @@
+import { useNavigate } from 'react-router-dom';
 import { X, MapPinIcon, ClockIcon, UserIcon } from 'lucide-react';
 
 import type { HelpRequest } from '@/types/common';
 
 import { useAuth } from '@/context/AuthProvider';
 import { useRequests } from '@/context/RequestsProvider';
+
 
 interface RequestModalProps {
 	request: HelpRequest;
@@ -13,10 +15,10 @@ interface RequestModalProps {
 }
 
 const RequestInfoModal = ({ request, categoryLabel, isOpen, onClose }: RequestModalProps) => {
-	const { user } = useAuth();
-	const { deleteRequest, acceptRequest } = useRequests();
+	const { isAuthenticated } = useAuth();
+	const { acceptRequest } = useRequests();
+	const navigate = useNavigate();
 
-	const myRequest = user?.id === request.author.id;
 	if (!isOpen) {return null;}
 
 	return (
@@ -82,36 +84,21 @@ const RequestInfoModal = ({ request, categoryLabel, isOpen, onClose }: RequestMo
 
 				{/* Footer Actions */}
 				<div className='sticky bottom-0 bg-white border-t border-slate-200 px-6 py-4 flex gap-3'>
-					{
-						myRequest ? (
-							<button
-								className='flex-1 px-4 py-2 bg-red-600 text-white hover:bg-red-700 transition-colors rounded-lg cursor-pointer'
-								onClick={() => {
-									deleteRequest(request);
-									onClose();
-								}}
-							>
-								Delete my request
-							</button>
-						) : request.status === 'in-progress' ? (
-							<button
-								className='flex-1 px-4 py-2 bg-orange-600 text-white rounded-lg'
-								disabled
-							>
-								Request is currently in progress
-							</button>
-						) : (
-							<button
-								className='flex-1 px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-colors cursor-pointer'
-								onClick={() => {
-									acceptRequest(request);
-									onClose();
-								}}
-							>
-								Offer Help
-							</button>
-						)
-					}
+
+					<button
+						className='flex-1 px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-colors cursor-pointer'
+						onClick={() => {
+							if (isAuthenticated) {
+								acceptRequest(request);
+								onClose();
+							} else {
+								navigate('/register');
+							}
+
+						}}
+					>
+						Offer Help
+					</button>
 					<button
 						onClick={onClose}
 						className='px-4 py-2 bg-white text-slate-600 border border-slate-200 rounded-lg hover:border-slate-300 transition-colors cursor-pointer'
