@@ -12,9 +12,15 @@ import requestsRoutes from './routes/requestsRoutes.js';
 
 const app = express();
 
+const allowedOrigins = [
+	'http://localhost:5173',
+	'http://localhost:4173',
+	'https://neighbour-help.vercel.app',
+];
+
 app.use(
 	cors({
-		origin: process.env.CLIENT_URL,
+		origin: allowedOrigins,
   		credentials: true,
 		methods: ['GET', 'POST', 'PUT', 'DELETE'],
 		allowedHeaders: ['Content-Type', 'Authorization']
