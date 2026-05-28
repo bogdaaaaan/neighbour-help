@@ -17,6 +17,7 @@ const RequestInfoModal = ({ request, categoryLabel, isOpen, onClose }: RequestMo
 	const { deleteRequest, acceptRequest } = useRequests();
 
 	const myRequest = user?.id === request.author.id;
+
 	if (!isOpen) {return null;}
 
 	return (
@@ -83,7 +84,7 @@ const RequestInfoModal = ({ request, categoryLabel, isOpen, onClose }: RequestMo
 				{/* Footer Actions */}
 				<div className='sticky bottom-0 bg-white border-t border-slate-200 px-6 py-4 flex gap-3'>
 					{
-						myRequest ? (
+						myRequest && request.status === 'open' ? (
 							<button
 								className='flex-1 px-4 py-2 bg-red-600 text-white hover:bg-red-700 transition-colors rounded-lg cursor-pointer'
 								onClick={() => {
@@ -100,7 +101,7 @@ const RequestInfoModal = ({ request, categoryLabel, isOpen, onClose }: RequestMo
 							>
 								Request is currently in progress
 							</button>
-						) : (
+						) : request.status === 'open' ? (
 							<button
 								className='flex-1 px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-colors cursor-pointer'
 								onClick={() => {
@@ -109,6 +110,13 @@ const RequestInfoModal = ({ request, categoryLabel, isOpen, onClose }: RequestMo
 								}}
 							>
 								Offer Help
+							</button>
+						) : (
+							<button
+								className='flex-1 px-4 py-2 bg-slate-600 text-white rounded-lg'
+								disabled
+							>
+								Request is completed
 							</button>
 						)
 					}

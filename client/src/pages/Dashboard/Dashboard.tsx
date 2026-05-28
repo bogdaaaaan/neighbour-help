@@ -15,14 +15,21 @@ import { CATEGORIES } from '@/utils/categories';
 const Dashboard = () => {
 	const { requests } = useRequests();
 	const { user } = useAuth();
+
 	const [activeCategory, setActiveCategory] = useState<string | null>(null);
 	const [selectedRequest, setSelectedRequest] = useState<HelpRequest | null>(null);
+	const [showPersonal, setShowPersonal] = useState(false);
 
 	const requestsFromOthers = requests.filter(r => r.author.id !== user?.id && r.status == 'open');
+	const requestsPersonal = requests.filter(r => r.author.id == user?.id);
 
-	const filteredRequests = activeCategory
+	const filteredOtherRequests = activeCategory
 		? requestsFromOthers.filter(request => request.category === activeCategory)
 		: requestsFromOthers;
+
+	const filteredPersonalRequests = activeCategory
+		? requestsPersonal.filter(request => request.category === activeCategory)
+		: requestsPersonal;
 
 	return (
 		<section className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8'>
@@ -32,8 +39,8 @@ const Dashboard = () => {
 				onCategoryChange={setActiveCategory}
 			/>
 
-			<div className={`mt-8 grid grid-cols-1 ${filteredRequests.length > 0 ? 'md:grid-cols-2 lg:grid-cols-3' : ''} gap-6`}>
-				{filteredRequests.length > 0 ? filteredRequests.map(request => (
+			<div className={`mt-8 grid grid-cols-1 ${filteredOtherRequests.length > 0 ? 'md:grid-cols-2 lg:grid-cols-3' : ''} gap-6`}>
+				{filteredOtherRequests.length > 0 ? filteredOtherRequests.map(request => (
 					<HelpRequestCard
 						key={request.id}
 						request={request}
@@ -48,6 +55,26 @@ const Dashboard = () => {
 						</div>
 					</main>
 				)}
+
+				<div className='flex  items-center justify-center mt-4 mb-4'>
+					<button
+						className='w-1/3 items-center justify-center gap-2 py-2 px-4 rounded-lg text-sm font-medium transition-colors cursor-pointer bg-slate-100 text-slate-500 hover:text-slate-700'
+						onClick={() => setShowPersonal(!showPersonal)}
+					>
+						{showPersonal ? 'Hide your requests' : 'Show your requests'}
+					</button>
+				</div>
+
+				<div className='mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
+					{showPersonal && filteredPersonalRequests.map(request => (
+						<HelpRequestCard
+							key={request.id}
+							request={request}
+							categoryLabel={CATEGORIES.find(c => c.id === request.category)?.label || 'Other'}
+							onViewDetails={() => setSelectedRequest(request)}
+						/>
+					))}
+				</div>
 			</div>
 
 			{selectedRequest && (
