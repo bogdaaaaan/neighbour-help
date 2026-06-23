@@ -4,7 +4,6 @@ services:
       - ./client/.env
     build:
       context: ./client
-      target: development
     ports:
       - "5173:5173"
     volumes:
@@ -18,7 +17,6 @@ services:
       - ./server/.env
     build:
       context: ./server
-      target: development
     ports:
       - "5000:5000"
     volumes:
