@@ -1,0 +1,26 @@
+services:
+  client:
+    env_file:
+      - ./client/.env
+    build:
+      context: ./client
+      target: development
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./client:/app
+      - /app/node_modules
+    depends_on:
+      - server
+
+  server:
+    env_file:
+      - ./server/.env
+    build:
+      context: ./server
+      target: development
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./server:/app
+      - /app/node_modules
